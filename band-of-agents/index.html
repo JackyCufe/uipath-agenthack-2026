@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MindTheGap — Agentic Requirement Pipeline</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: #0a0e1a;
+    color: #e2e8f0;
+    overflow-x: hidden;
+  }
+
+  .slide {
+    width: 100vw;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 80px;
+    position: relative;
+    border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+  }
+
+  .slide-num {
+    position: absolute;
+    top: 30px;
+    right: 40px;
+    font-size: 14px;
+    color: #6366f1;
+    font-weight: 600;
+    letter-spacing: 2px;
+  }
+
+  /* ── Slide 1: Title ── */
+  .slide-1 {
+    background: radial-gradient(ellipse at top, #1e1b4b 0%, #0a0e1a 60%);
+    flex-direction: column;
+    text-align: center;
+  }
+  .slide-1 h1 {
+    font-size: 72px;
+    font-weight: 900;
+    background: linear-gradient(135deg, #818cf8, #c084fc, #f472b6);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: -2px;
+    margin-bottom: 16px;
+  }
+  .slide-1 .tagline {
+    font-size: 24px;
+    color: #94a3b8;
+    font-weight: 400;
+    margin-bottom: 40px;
+  }
+  .slide-1 .meta {
+    display: flex;
+    gap: 32px;
+    font-size: 16px;
+    color: #64748b;
+  }
+  .slide-1 .meta span { display: flex; align-items: center; gap: 8px; }
+  .slide-1 .badge {
+    display: inline-block;
+    padding: 6px 16px;
+    background: rgba(99, 102, 241, 0.15);
+    border: 1px solid rgba(99, 102, 241, 0.3);
+    border-radius: 100px;
+    color: #818cf8;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 32px;
+  }
+
+  /* ── Slide 2: Problem ── */
+  .slide-2 { background: #0a0e1a; }
+  .slide-2 .content { max-width: 1000px; width: 100%; }
+  .slide-2 h2 {
+    font-size: 48px; font-weight: 800; margin-bottom: 48px;
+    color: #f1f5f9;
+  }
+  .gap-grid {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px;
+  }
+  .gap-card {
+    background: rgba(30, 41, 59, 0.5);
+    border: 1px solid rgba(99, 102, 241, 0.2);
+    border-radius: 20px; padding: 40px 32px;
+    transition: all 0.3s;
+  }
+  .gap-card:hover { border-color: #6366f1; transform: translateY(-4px); }
+  .gap-card .icon {
+    width: 56px; height: 56px; border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px; margin-bottom: 24px;
+  }
+  .gap-card h3 { font-size: 22px; font-weight: 700; margin-bottom: 12px; color: #f1f5f9; }
+  .gap-card p { font-size: 15px; color: #94a3b8; line-height: 1.7; }
+  .gap-1 .icon { background: rgba(239, 68, 68, 0.15); color: #f87171; }
+  .gap-2 .icon { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
+  .gap-3 .icon { background: rgba(99, 102, 241, 0.15); color: #818cf8; }
+
+  /* ── Slide 3: Solution ── */
+  .slide-3 { background: linear-gradient(180deg, #0a0e1a, #111827); }
+  .slide-3 .content { max-width: 1200px; width: 100%; }
+  .slide-3 h2 { font-size: 48px; font-weight: 800; margin-bottom: 16px; color: #f1f5f9; }
+  .slide-3 .subtitle { font-size: 18px; color: #818cf8; margin-bottom: 48px; }
+
+  .pipeline {
+    display: flex; align-items: stretch; gap: 0; overflow-x: auto; padding-bottom: 20px;
+  }
+  .stage {
+    flex: 1; min-width: 140px; text-align: center; position: relative;
+  }
+  .stage-box {
+    background: rgba(30, 41, 59, 0.6);
+    border: 1px solid rgba(99, 102, 241, 0.25);
+    border-radius: 16px; padding: 24px 16px;
+    margin-bottom: 12px; min-height: 180px;
+    display: flex; flex-direction: column; justify-content: center;
+  }
+  .stage-box.ai { border-color: rgba(168, 85, 247, 0.4); background: rgba(88, 28, 135, 0.15); }
+  .stage-box.human { border-color: rgba(34, 197, 94, 0.4); background: rgba(20, 83, 45, 0.15); }
+  .stage-num { font-size: 12px; font-weight: 700; color: #6366f1; letter-spacing: 1px; margin-bottom: 8px; }
+  .stage-name { font-size: 15px; font-weight: 600; color: #e2e8f0; margin-bottom: 6px; }
+  .stage-desc { font-size: 12px; color: #94a3b8; line-height: 1.5; }
+  .stage-arrow {
+    position: absolute; right: -8px; top: 40%; color: #475569; font-size: 20px; z-index: 2;
+  }
+  .stage:last-child .stage-arrow { display: none; }
+  .stage-role { font-size: 11px; color: #64748b; margin-top: 4px; }
+
+  /* ── Slide 4: Architecture ── */
+  .slide-4 { background: #0a0e1a; }
+  .slide-4 .content { max-width: 1000px; width: 100%; }
+  .slide-4 h2 { font-size: 48px; font-weight: 800; margin-bottom: 48px; color: #f1f5f9; }
+  .arch-layer {
+    background: rgba(30, 41, 59, 0.4);
+    border: 1px solid rgba(99, 102, 241, 0.2);
+    border-radius: 16px; padding: 28px 36px; margin-bottom: 16px;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .arch-layer .left { display: flex; align-items: center; gap: 20px; }
+  .arch-layer .icon-box {
+    width: 48px; height: 48px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center; font-size: 22px;
+  }
+  .arch-layer h3 { font-size: 18px; font-weight: 700; color: #f1f5f9; }
+  .arch-layer p { font-size: 14px; color: #94a3b8; }
+  .arch-arrow { text-align: center; color: #475569; font-size: 24px; margin: 4px 0; }
+  .arch-1 .icon-box { background: rgba(99, 102, 241, 0.15); color: #818cf8; }
+  .arch-2 .icon-box { background: rgba(34, 197, 94, 0.15); color: #4ade80; }
+  .arch-3 .icon-box { background: rgba(168, 85, 247, 0.15); color: #c084fc; }
+  .arch-4 .icon-box { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
+
+  /* ── Slide 5: Key Innovation ── */
+  .slide-5 { background: linear-gradient(135deg, #1e1b4b, #0a0e1a); }
+  .slide-5 .content { max-width: 1000px; width: 100%; }
+  .slide-5 h2 { font-size: 48px; font-weight: 800; margin-bottom: 48px; color: #f1f5f9; }
+  .innov-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  .innov-card {
+    background: rgba(30, 41, 59, 0.5);
+    border: 1px solid rgba(99, 102, 241, 0.2);
+    border-radius: 16px; padding: 32px;
+  }
+  .innov-card h3 { font-size: 20px; font-weight: 700; color: #818cf8; margin-bottom: 12px; }
+  .innov-card p { font-size: 15px; color: #cbd5e1; line-height: 1.7; }
+  .innov-card .highlight {
+    display: inline-block; padding: 4px 12px;
+    background: rgba(99, 102, 241, 0.15); border-radius: 8px;
+    font-size: 13px; color: #a5b4fc; margin-top: 12px;
+  }
+
+  /* ── Slide 6: Demo ── */
+  .slide-6 { background: #0a0e1a; }
+  .slide-6 .content { max-width: 1000px; width: 100%; }
+  .slide-6 h2 { font-size: 48px; font-weight: 800; margin-bottom: 16px; color: #f1f5f9; }
+  .slide-6 .subtitle { font-size: 18px; color: #818cf8; margin-bottom: 40px; }
+  .demo-flow {
+    background: rgba(30, 41, 59, 0.4);
+    border: 1px solid rgba(99, 102, 241, 0.2);
+    border-radius: 20px; padding: 40px;
+  }
+  .demo-step {
+    display: flex; align-items: flex-start; gap: 20px; padding: 16px 0;
+    border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+  }
+  .demo-step:last-child { border-bottom: none; }
+  .demo-step .num {
+    width: 36px; height: 36px; border-radius: 10px; flex-shrink: 0;
+    background: rgba(99, 102, 241, 0.15); color: #818cf8;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 16px;
+  }
+  .demo-step .text h4 { font-size: 16px; font-weight: 600; color: #f1f5f9; margin-bottom: 4px; }
+  .demo-step .text p { font-size: 14px; color: #94a3b8; line-height: 1.6; }
+  .demo-step .text code {
+    background: rgba(99, 102, 241, 0.1); padding: 2px 8px;
+    border-radius: 4px; font-size: 13px; color: #a5b4fc;
+  }
+
+  /* ── Slide 7: Tech Stack ── */
+  .slide-7 { background: linear-gradient(180deg, #0a0e1a, #111827); }
+  .slide-7 .content { max-width: 1000px; width: 100%; text-align: center; }
+  .slide-7 h2 { font-size: 48px; font-weight: 800; margin-bottom: 48px; color: #f1f5f9; }
+  .tech-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+  .tech-card {
+    background: rgba(30, 41, 59, 0.4);
+    border: 1px solid rgba(99, 102, 241, 0.2);
+    border-radius: 16px; padding: 32px 20px; text-align: center;
+  }
+  .tech-card .icon { font-size: 36px; margin-bottom: 16px; }
+  .tech-card h3 { font-size: 16px; font-weight: 700; color: #f1f5f9; margin-bottom: 8px; }
+  .tech-card p { font-size: 13px; color: #94a3b8; }
+
+  /* ── Slide 8: Closing ── */
+  .slide-8 {
+    background: radial-gradient(ellipse at center, #1e1b4b 0%, #0a0e1a 70%);
+    flex-direction: column; text-align: center;
+  }
+  .slide-8 h1 {
+    font-size: 64px; font-weight: 900;
+    background: linear-gradient(135deg, #818cf8, #c084fc, #f472b6);
+    -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+    margin-bottom: 24px;
+  }
+  .slide-8 .tagline { font-size: 22px; color: #94a3b8; margin-bottom: 48px; }
+  .slide-8 .links { display: flex; gap: 24px; }
+  .slide-8 .link {
+    padding: 14px 32px; border-radius: 12px; font-size: 16px; font-weight: 600;
+    text-decoration: none; transition: all 0.3s;
+  }
+  .slide-8 .link.primary { background: #6366f1; color: white; }
+  .slide-8 .link.secondary { background: rgba(99, 102, 241, 0.1); color: #818cf8; border: 1px solid rgba(99, 102, 241, 0.3); }
+  .slide-8 .team { margin-top: 60px; font-size: 14px; color: #64748b; }
+
+  @media (max-width: 768px) {
+    .slide { padding: 40px 24px; }
+    .slide-1 h1 { font-size: 42px; }
+    .gap-grid, .innov-grid { grid-template-columns: 1fr; }
+    .tech-grid { grid-template-columns: repeat(2, 1fr); }
+    .pipeline { flex-direction: column; }
+    .stage-arrow { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── Slide 1: Title ── -->
+<div class="slide slide-1">
+  <div class="badge">UiPath AgentHack 2026</div>
+  <h1>MindTheGap</h1>
+  <p class="tagline">6 AI Agents. One BPMN Pipeline. Zero Gaps.</p>
+  <div class="meta">
+    <span>Track: Agentic Case Management</span>
+    <span>Team: MindTheGap</span>
+    <span>GitHub: JackyCufe/uipath-agenthack-2026</span>
+  </div>
+  <div class="slide-num">01 / 08</div>
+</div>
+
+<!-- ── Slide 2: Problem ── -->
+<div class="slide slide-2">
+  <div class="content">
+    <h2>The Three Gaps</h2>
+    <div class="gap-grid">
+      <div class="gap-card gap-1">
+        <div class="icon">📋</div>
+        <h3>Information Gap</h3>
+        <p>Sales captures vague requirements. Engineers build the wrong thing. 40% of features are never used because the original need was never properly structured.</p>
+      </div>
+      <div class="gap-card gap-2">
+        <div class="icon">🧠</div>
+        <h3>Knowledge Gap</h3>
+        <p>Hard-won lessons from past projects die in Slack threads and Confluence graves. The next requirement starts from scratch, repeating the same mistakes.</p>
+      </div>
+      <div class="gap-card gap-3">
+        <div class="icon">⚙️</div>
+        <h3>Workflow Gap</h3>
+        <p>Approval gates exist on paper but aren't enforced mechanically. "P0 must pass" becomes "P0 mostly passed" becomes production incidents.</p>
+      </div>
+    </div>
+  </div>
+  <div class="slide-num">02 / 08</div>
+</div>
+
+<!-- ── Slide 3: Solution ── -->
+<div class="slide slide-3">
+  <div class="content">
+    <h2>The 6-Stage Pipeline</h2>
+    <p class="subtitle">Each stage pairs an AI Agent (Service Task) with Human Confirmation (User Task)</p>
+    <div class="pipeline">
+      <div class="stage">
+        <div class="stage-box ai">
+          <div class="stage-num">S0</div>
+          <div class="stage-name">KB Search</div>
+          <div class="stage-desc">Retrieve similar historical requirements</div>
+        </div>
+        <div class="stage-role">Service Task</div>
+        <div class="stage-arrow">→</div>
+      </div>
+      <div class="stage">
+        <div class="stage-box ai">
+          <div class="stage-num">S1</div>
+          <div class="stage-name">AI Gatekeeping</div>
+          <div class="stage-desc">Extract 4 fields, give verdict</div>
+        </div>
+        <div class="stage-role">Service + User Task</div>
+        <div class="stage-arrow">→</div>
+      </div>
+      <div class="stage">
+        <div class="stage-box ai">
+          <div class="stage-num">S2</div>
+          <div class="stage-name">Value Transform</div>
+          <div class="stage-desc">Structure PM acceptance criteria</div>
+        </div>
+        <div class="stage-role">Service + User Task</div>
+        <div class="stage-arrow">→</div>
+      </div>
+      <div class="stage">
+        <div class="stage-box ai">
+          <div class="stage-num">S3</div>
+          <div class="stage-name">Test Cases</div>
+          <div class="stage-desc">Generate customer-perspective tests</div>
+        </div>
+        <div class="stage-role">Service + User Task</div>
+        <div class="stage-arrow">→</div>
+      </div>
+      <div class="stage">
+        <div class="stage-box ai">
+          <div class="stage-num">S4</div>
+          <div class="stage-name">Release Review</div>
+          <div class="stage-desc">P0/P1/P2 rubric + Hard Gate</div>
+        </div>
+        <div class="stage-role">Service + User Task</div>
+        <div class="stage-arrow">→</div>
+      </div>
+      <div class="stage">
+        <div class="stage-box ai">
+          <div class="stage-num">S5-6</div>
+          <div class="stage-name">Feedback + Retro</div>
+          <div class="stage-desc">Satisfaction analysis + KB write</div>
+        </div>
+        <div class="stage-role">Service Tasks</div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-num">03 / 08</div>
+</div>
+
+<!-- ── Slide 4: Architecture ── -->
+<div class="slide slide-4">
+  <div class="content">
+    <h2>Architecture</h2>
+    <div class="arch-layer arch-1">
+      <div class="left">
+        <div class="icon-box">🔧</div>
+        <div>
+          <h3>UiPath Maestro BPMN</h3>
+          <p>Process orchestration, gateways, human tasks via Action Center</p>
+        </div>
+      </div>
+    </div>
+    <div class="arch-arrow">↓ HTTP (ngrok tunnel)</div>
+    <div class="arch-layer arch-2">
+      <div class="left">
+        <div class="icon-box">⚡</div>
+        <div>
+          <h3>FastAPI Server (Python)</h3>
+          <p>6 REST endpoints bridging BPMN Service Tasks to AI agents</p>
+        </div>
+      </div>
+    </div>
+    <div class="arch-arrow">↓</div>
+    <div class="arch-layer arch-3">
+      <div class="left">
+        <div class="icon-box">🤖</div>
+        <div>
+          <h3>AI Agent Engine</h3>
+          <p>Tool-use loop with DeepSeek LLM · 6 agent prompts · Schema builder</p>
+        </div>
+      </div>
+    </div>
+    <div class="arch-arrow">↓</div>
+    <div class="arch-layer arch-4">
+      <div class="left">
+        <div class="icon-box">📦</div>
+        <div>
+          <h3>Data Layer</h3>
+          <p>Embedding search · Dual-layer storage · Schema 1-6 structured handoff</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-num">04 / 08</div>
+</div>
+
+<!-- ── Slide 5: Key Innovations ── -->
+<div class="slide slide-5">
+  <div class="content">
+    <h2>Key Innovations</h2>
+    <div class="innov-grid">
+      <div class="innov-card">
+        <h3>Hard Gate Enforcement</h3>
+        <p>Customer scenarios must be verified. Any P0 failure = blocked. No exceptions, no bypass, no "it mostly works."</p>
+        <span class="highlight">Mechanical enforcement, not policy</span>
+      </div>
+      <div class="innov-card">
+        <h3>Escalation, Not Rollback</h3>
+        <p>Rejected items escalate to Team Lead for arbitration. Approve, reject, or request info. BPMN-compatible — no reverse flows.</p>
+        <span class="highlight">BPMN 2.0 compliant</span>
+      </div>
+      <div class="innov-card">
+        <h3>Knowledge Feedback Loop</h3>
+        <p>S6 writes lessons to KB → S0 retrieves them for next requirement. The pipeline gets smarter with every cycle.</p>
+        <span class="highlight">Self-improving organizational memory</span>
+      </div>
+      <div class="innov-card">
+        <h3>AI-Human Pairing</h3>
+        <p>Every stage: AI pre-fills structured data, human confirms or corrects. AI does the heavy lifting, humans make the decisions.</p>
+        <span class="highlight">Augmented intelligence, not replacement</span>
+      </div>
+    </div>
+  </div>
+  <div class="slide-num">05 / 08</div>
+</div>
+
+<!-- ── Slide 6: Demo ── -->
+<div class="slide slide-6">
+  <div class="content">
+    <h2>Demo Scenario</h2>
+    <p class="subtitle">Multi-language auto-detection for reception bot — Acme Corp</p>
+    <div class="demo-flow">
+      <div class="demo-step">
+        <div class="num">1</div>
+        <div class="text">
+          <h4>S1 Gatekeeping — AI extracts 4 fields from raw text</h4>
+          <p>Input: <code>"Customer needs multi-language auto-detection for reception bot"</code> → AI extracts: who (Acme Corp IT director), scenario (reception desk), problem (single language only), expected (30% satisfaction increase)</p>
+        </div>
+      </div>
+      <div class="demo-step">
+        <div class="num">2</div>
+        <div class="text">
+          <h4>S2 Value Transform — AI structures acceptance criteria</h4>
+          <p>4 acceptance criteria with P0/P1/P2 priorities + customer scenario test cases generated automatically</p>
+        </div>
+      </div>
+      <div class="demo-step">
+        <div class="num">3</div>
+        <div class="text">
+          <h4>S3-S4 Test + Hard Gate — 5/5 tests passed → approved</h4>
+          <p>All P0 scenarios verified (EN, CN, JP, KR, ES). Hard gate passes. Release approved.</p>
+        </div>
+      </div>
+      <div class="demo-step">
+        <div class="num">4</div>
+        <div class="text">
+          <h4>S5-S6 Feedback + Retrospective — 93% satisfaction, KB updated</h4>
+          <p>3 customers surveyed. Key finding: escalation tickets dropped 55-60%. Next version suggestion: add Vietnamese, Thai. KB updated for future S0 retrieval.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-num">06 / 08</div>
+</div>
+
+<!-- ── Slide 7: Tech Stack ── -->
+<div class="slide slide-7">
+  <div class="content">
+    <h2>Tech Stack</h2>
+    <div class="tech-grid">
+      <div class="tech-card">
+        <div class="icon">🎨</div>
+        <h3>UiPath Studio</h3>
+        <p>BPMN 2.0 orchestration, Action Center, Maestro</p>
+      </div>
+      <div class="tech-card">
+        <div class="icon">⚡</div>
+        <h3>FastAPI</h3>
+        <p>Python API bridge, 6 REST endpoints</p>
+      </div>
+      <div class="tech-card">
+        <div class="icon">🧠</div>
+        <h3>DeepSeek LLM</h3>
+        <p>AI agent reasoning, tool-use loop</p>
+      </div>
+      <div class="tech-card">
+        <div class="icon">🔗</div>
+        <h3>ngrok</h3>
+        <p>Public tunnel, UiPath Cloud → local API</p>
+      </div>
+    </div>
+  </div>
+  <div class="slide-num">07 / 08</div>
+</div>
+
+<!-- ── Slide 8: Closing ── -->
+<div class="slide slide-8">
+  <h1>MindTheGap</h1>
+  <p class="tagline">Closing the information gap, knowledge gap, and workflow gap — one requirement at a time.</p>
+  <div class="links">
+    <a href="https://github.com/JackyCufe/uipath-agenthack-2026" class="link primary">GitHub Repository</a>
+    <a href="https://staging.uipath.com/hackathon26_642/studio_/designer" class="link secondary">UiPath Studio</a>
+  </div>
+  <p class="team">Team MindTheGap · UiPath AgentHack 2026 · Track: Agentic Case Management</p>
+  <div class="slide-num">08 / 08</div>
+</div>
+
+</body>
+</html>
