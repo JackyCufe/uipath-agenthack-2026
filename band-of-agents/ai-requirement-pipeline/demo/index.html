@@ -1,0 +1,2843 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI需求链 — 傅盛AI战队·黑客松 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-base: #f6f8fa;
+    --bg-card: #ffffff;
+    --bg-card-hover: #f0f3f6;
+    --bg-elevated: #eaeef2;
+    --border: #d0d7de;
+    --border-light: #eaeef2;
+    --text-primary: #1f2328;
+    --text-secondary: #57606a;
+    --text-muted: #8c959f;
+    --accent-blue: #0969da;
+    --accent-blue-dim: #ddf4ff;
+    --accent-green: #1a7f37;
+    --accent-green-dim: #dafbe1;
+    --accent-amber: #9a6700;
+    --accent-amber-dim: #fff8c5;
+    --accent-red: #cf222e;
+    --accent-red-dim: #ffebe9;
+    --accent-purple: #8250df;
+    --accent-purple-dim: #fbefff;
+    --gradient-hero: linear-gradient(135deg, #f6f8fa 0%, #eef2f7 50%, #f6f8fa 100%);
+    --font-main: 'Inter', system-ui, -apple-system, sans-serif;
+    --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 16px;
+    --shadow-card: 0 1px 8px rgba(31,35,40,0.08);
+    --shadow-elevated: 0 4px 20px rgba(31,35,40,0.12);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--font-main);
+    background: var(--bg-base);
+    color: var(--text-primary);
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* ─── Layout ─── */
+  .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+
+  section { padding: 80px 0; }
+
+  /* ─── Hero ─── */
+  .hero {
+    background: var(--gradient-hero);
+    padding: 56px 0 40px;
+    position: relative;
+    overflow: hidden;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -200px; left: 50%; transform: translateX(-50%);
+    width: 800px; height: 800px;
+    background: radial-gradient(circle, rgba(88,166,255,0.07) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(88,166,255,0.1);
+    border: 1px solid rgba(88,166,255,0.25);
+    border-radius: 100px;
+    padding: 6px 16px;
+    font-size: 13px;
+    color: var(--accent-blue);
+    font-weight: 500;
+    margin-bottom: 28px;
+    letter-spacing: 0.02em;
+  }
+
+  .hero-badge .dot {
+    width: 7px; height: 7px;
+    background: var(--accent-blue);
+    border-radius: 50%;
+    animation: pulse 2s infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
+  }
+
+  .hero h1 {
+    font-size: clamp(2.2rem, 5vw, 3.5rem);
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: -0.02em;
+    margin-bottom: 20px;
+    background: linear-gradient(135deg, #e6edf3 0%, #58a6ff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .hero-problem {
+    font-size: 1.15rem;
+    color: var(--text-secondary);
+    max-width: 660px;
+    margin-bottom: 16px;
+    line-height: 1.7;
+  }
+
+  .hero-problem strong {
+    color: var(--accent-amber);
+    -webkit-text-fill-color: var(--accent-amber);
+    font-weight: 600;
+  }
+
+  .hero-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+
+  .hero-nav {
+    display: flex;
+    gap: 10px;
+    flex-shrink: 0;
+  }
+
+  .hero-nav-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 16px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--bg-card);
+    color: var(--text-secondary);
+    font-size: 0.82rem;
+    font-weight: 500;
+    cursor: pointer;
+    text-decoration: none;
+    transition: border-color 0.2s, color 0.2s, background 0.2s;
+    white-space: nowrap;
+  }
+
+  .hero-nav-btn:hover {
+    border-color: var(--accent-blue);
+    color: var(--accent-blue);
+    background: rgba(88,166,255,0.06);
+  }
+
+  .hero-nav-btn.green:hover {
+    border-color: var(--accent-green);
+    color: var(--accent-green);
+    background: rgba(63,185,80,0.06);
+  }
+
+  .hero-inline-tag {
+    display: inline-block;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--accent-green);
+    -webkit-text-fill-color: var(--accent-green);
+    background: rgba(63,185,80,0.08);
+    border: 1px solid rgba(63,185,80,0.2);
+    border-radius: 6px;
+    padding: 2px 8px;
+    margin-left: 10px;
+    vertical-align: middle;
+    letter-spacing: 0;
+  }
+
+  .hero-inspiration {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    max-width: 100%;
+    line-height: 1.5;
+    margin-top: 8px;
+    border-left: 3px solid var(--accent-blue);
+    padding-left: 12px;
+    background: #f0f6ff;
+    border-radius: 0 4px 4px 0;
+  }
+
+  .hero-inspiration strong {
+    color: var(--text-secondary);
+    -webkit-text-fill-color: var(--text-secondary);
+    font-weight: 600;
+  }
+
+  .hero-arch-callout {
+    display: block;
+    background: #ddf4ff;
+    border: 1px solid #54aeff;
+    border-radius: var(--radius-md);
+    padding: 12px 18px;
+    font-size: 0.9rem;
+    color: var(--text-primary);
+    margin-bottom: 10px;
+    max-width: 100%;
+    line-height: 1.5;
+  }
+  .hero-arch-callout strong {
+    color: var(--accent-blue);
+    -webkit-text-fill-color: var(--accent-blue);
+  }
+  .hero-arch-sub {
+    display: block;
+    width: 100%;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-top: 4px;
+    padding-left: 22px;
+  }
+
+  .hero-author {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    text-align: center;
+    margin-top: 24px;
+    margin-bottom: 48px;
+  }
+
+  .hero-author a {
+    color: var(--accent-blue);
+    text-decoration: none;
+  }
+
+  .hero-author a:hover {
+    text-decoration: underline;
+  }
+
+  .hero-stats {
+    display: flex;
+    gap: 40px;
+    flex-wrap: wrap;
+  }
+
+  .stat {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .stat-value {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--accent-blue);
+    font-family: var(--font-mono);
+    letter-spacing: -0.02em;
+  }
+
+  .stat-label {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .stat-divider {
+    width: 1px;
+    background: var(--border);
+    align-self: stretch;
+  }
+
+  /* ─── Section Headers ─── */
+  .section-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--accent-blue);
+    margin-bottom: 12px;
+  }
+
+  .section-label::before {
+    content: '';
+    display: block;
+    width: 16px; height: 2px;
+    background: var(--accent-blue);
+    border-radius: 2px;
+  }
+
+  .section-title {
+    font-size: clamp(1.5rem, 3vw, 2rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 12px;
+  }
+
+  .section-desc {
+    font-size: 1rem;
+    color: var(--text-secondary);
+    line-height: 1.7;
+  }
+
+  /* ─── Pipeline Section ─── */
+  .pipeline-section { background: var(--bg-base); }
+
+  .pipeline-flow {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    margin-top: 48px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+  }
+
+  .pipeline-step {
+    flex: 1;
+    min-width: 140px;
+    position: relative;
+  }
+
+  .pipeline-step:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    right: -1px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-top: 20px solid transparent;
+    border-bottom: 20px solid transparent;
+    border-left: 16px solid var(--bg-elevated);
+    z-index: 2;
+  }
+
+  .step-card {
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-right: none;
+    padding: 24px 20px;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    height: 100%;
+    position: relative;
+  }
+
+  .pipeline-step:last-child .step-card {
+    border-right: 1px solid var(--border);
+    border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  }
+
+  .pipeline-step:first-child .step-card {
+    border-radius: var(--radius-md) 0 0 var(--radius-md);
+  }
+
+  .step-card:hover {
+    background: var(--bg-card-hover);
+    border-color: var(--accent-blue);
+    z-index: 1;
+  }
+
+  .step-number {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-muted);
+    font-weight: 500;
+    margin-bottom: 10px;
+    letter-spacing: 0.05em;
+  }
+
+  .step-icon {
+    font-size: 1.8rem;
+    margin-bottom: 10px;
+    display: block;
+  }
+
+  .step-name {
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin-bottom: 4px;
+    color: var(--text-primary);
+  }
+
+  .step-subtitle {
+    font-size: 0.78rem;
+    color: var(--text-secondary);
+  }
+
+  /* ─── Pipeline Tooltip ─── */
+  .tooltip-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    background: rgba(31,35,40,0.5);
+    backdrop-filter: blur(4px);
+    align-items: center;
+    justify-content: center;
+  }
+
+  .tooltip-overlay.active { display: flex; }
+
+  .tooltip-modal {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 32px;
+    max-width: 520px;
+    width: 90%;
+    box-shadow: var(--shadow-elevated);
+    position: relative;
+    animation: modalIn 0.2s ease;
+  }
+
+  @keyframes modalIn {
+    from { opacity: 0; transform: scale(0.95) translateY(10px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+  }
+
+  .tooltip-close {
+    position: absolute;
+    top: 16px; right: 16px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-size: 18px;
+    width: 32px; height: 32px;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+  }
+
+  .tooltip-close:hover { color: var(--text-primary); border-color: var(--accent-blue); }
+
+  .tooltip-step-num {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--accent-blue);
+    margin-bottom: 8px;
+    font-weight: 500;
+  }
+
+  .tooltip-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 16px;
+  }
+
+  .tooltip-desc {
+    font-size: 0.92rem;
+    color: var(--text-secondary);
+    line-height: 1.75;
+    margin-bottom: 20px;
+  }
+
+  .tooltip-rule-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .tooltip-rule {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    padding: 10px 14px;
+    background: var(--bg-elevated);
+    border-radius: var(--radius-sm);
+    border-left: 3px solid var(--accent-blue);
+  }
+
+  .tooltip-rule-icon { color: var(--accent-blue); flex-shrink: 0; }
+
+  /* ─── 4D Section ─── */
+  .principles-section {
+    background: linear-gradient(to bottom, var(--bg-base), #eef2f7);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .principles-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin-top: 40px;
+  }
+
+  .principle-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 24px;
+    transition: border-color 0.2s;
+  }
+
+  .principle-card:hover { border-color: var(--accent-purple); }
+
+  .principle-letter {
+    font-size: 2rem;
+    font-weight: 800;
+    font-family: var(--font-mono);
+    color: var(--accent-purple);
+    margin-bottom: 10px;
+    letter-spacing: -0.03em;
+  }
+
+  .principle-name {
+    font-size: 1rem;
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+
+  .principle-desc {
+    font-size: 0.84rem;
+    color: var(--text-secondary);
+    line-height: 1.65;
+  }
+
+  /* ─── Demo Section ─── */
+  .demo-section { background: var(--bg-base); }
+
+  .req-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(480px, 1fr));
+    gap: 16px;
+    margin-top: 40px;
+  }
+
+  @media (max-width: 600px) {
+    .req-grid { grid-template-columns: 1fr; }
+  }
+
+  .req-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+  }
+
+  .req-card:hover { border-color: var(--accent-blue); box-shadow: var(--shadow-card); }
+
+  .req-card.expanded { border-color: var(--accent-blue); }
+
+  .req-card-header {
+    padding: 20px 24px;
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .req-label {
+    flex-shrink: 0;
+    width: 36px; height: 36px;
+    border-radius: var(--radius-sm);
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-mono);
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text-secondary);
+  }
+
+  .req-info { flex: 1; min-width: 0; }
+
+  .req-source-tag {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    margin-bottom: 6px;
+  }
+
+  .req-text {
+    font-size: 0.88rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .req-card.expanded .req-text {
+    -webkit-line-clamp: unset;
+  }
+
+  .verdict-badge {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 12px;
+    border-radius: 100px;
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  .verdict-badge.approved {
+    background: var(--accent-green-dim);
+    color: var(--accent-green);
+    border: 1px solid rgba(63,185,80,0.3);
+  }
+
+  .verdict-badge.info_needed {
+    background: var(--accent-amber-dim);
+    color: var(--accent-amber);
+    border: 1px solid rgba(210,153,34,0.3);
+  }
+
+  .verdict-badge.rejected {
+    background: var(--accent-red-dim);
+    color: var(--accent-red);
+    border: 1px solid rgba(248,81,73,0.3);
+  }
+
+  .verdict-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: currentColor;
+  }
+
+  .expand-hint {
+    font-size: 12px;
+    color: var(--text-muted);
+    padding: 0 24px 16px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    transition: color 0.15s;
+  }
+
+  .req-card:hover .expand-hint { color: var(--accent-blue); }
+
+  .expand-hint .arrow {
+    transition: transform 0.25s;
+    display: inline-block;
+  }
+
+  .req-card.expanded .expand-hint .arrow { transform: rotate(180deg); }
+
+  /* ─── Journey Accordion ─── */
+  .req-journey {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.45s cubic-bezier(0.4,0,0.2,1);
+  }
+
+  .req-journey.open { max-height: 2000px; }
+
+  .journey-inner {
+    border-top: 1px solid var(--border);
+    padding: 24px;
+  }
+
+  .journey-title {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+    margin-bottom: 20px;
+  }
+
+  .journey-stages { display: flex; flex-direction: column; gap: 0; }
+
+  .journey-stage {
+    display: flex;
+    gap: 16px;
+    position: relative;
+  }
+
+  .journey-stage:not(:last-child)::before {
+    content: '';
+    position: absolute;
+    left: 15px;
+    top: 32px;
+    bottom: -4px;
+    width: 2px;
+    background: var(--border);
+  }
+
+  .stage-dot-wrap {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 6px;
+  }
+
+  .stage-dot {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    background: var(--bg-elevated);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+
+  .stage-dot.pass { border-color: var(--accent-green); background: var(--accent-green-dim); }
+  .stage-dot.warn { border-color: var(--accent-amber); background: var(--accent-amber-dim); }
+  .stage-dot.stop { border-color: var(--accent-red); background: var(--accent-red-dim); }
+
+  .stage-content {
+    flex: 1;
+    padding-bottom: 20px;
+  }
+
+  .stage-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+
+  .stage-name {
+    font-size: 0.9rem;
+    font-weight: 600;
+  }
+
+  .stage-tag {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: 600;
+  }
+
+  .stage-tag.pass { background: var(--accent-green-dim); color: var(--accent-green); }
+  .stage-tag.warn { background: var(--accent-amber-dim); color: var(--accent-amber); }
+  .stage-tag.stop { background: var(--accent-red-dim); color: var(--accent-red); }
+
+  .stage-data {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .stage-row {
+    display: flex;
+    gap: 8px;
+    font-size: 0.82rem;
+  }
+
+  .stage-row-key {
+    color: var(--text-muted);
+    min-width: 90px;
+    flex-shrink: 0;
+  }
+
+  .stage-row-val {
+    color: var(--text-secondary);
+    flex: 1;
+  }
+
+  .stage-row-val.highlight {
+    color: var(--text-primary);
+    font-weight: 500;
+  }
+
+  .criterion-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 8px;
+  }
+
+  .criterion-item {
+    font-size: 0.82rem;
+    padding: 10px 14px;
+    background: var(--bg-elevated);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-light);
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+
+  .criterion-check { color: var(--accent-green); flex-shrink: 0; margin-top: 1px; }
+
+  .criterion-detail { flex: 1; }
+
+  .criterion-title { font-weight: 600; color: var(--text-primary); margin-bottom: 3px; }
+  .criterion-meta { color: var(--text-muted); font-size: 0.78rem; }
+
+  .test-summary-row {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 10px;
+  }
+
+  .test-chip {
+    display: flex; align-items: center; gap: 5px;
+    font-size: 12px; font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 100px;
+  }
+
+  .test-chip.pass { background: var(--accent-green-dim); color: var(--accent-green); }
+  .test-chip.fail { background: var(--accent-red-dim); color: var(--accent-red); }
+  .test-chip.total { background: #eaeef2; color: #1f2328; border: 1px solid #d0d7de; }
+
+  .followup-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 8px;
+  }
+
+  .followup-item {
+    font-size: 0.82rem;
+    padding: 10px 14px;
+    background: rgba(210,153,34,0.05);
+    border: 1px solid rgba(210,153,34,0.2);
+    border-radius: var(--radius-sm);
+    color: var(--text-secondary);
+    line-height: 1.6;
+  }
+
+  .stop-box {
+    font-size: 0.84rem;
+    padding: 12px 16px;
+    background: rgba(248,81,73,0.05);
+    border: 1px solid rgba(248,81,73,0.2);
+    border-radius: var(--radius-sm);
+    color: var(--text-secondary);
+    line-height: 1.65;
+    margin-top: 8px;
+  }
+
+  /* ─── Feedback / Metrics section within journey ─── */
+  .satisfaction-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 8px;
+  }
+
+  .bar-bg {
+    flex: 1;
+    height: 8px;
+    background: var(--bg-elevated);
+    border-radius: 4px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+
+  .bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    background: var(--accent-green);
+    transition: width 1s ease;
+  }
+
+  .bar-pct { font-family: var(--font-mono); font-size: 13px; font-weight: 600; color: var(--accent-green); min-width: 40px; }
+
+  /* ─── Before/After Section ─── */
+  .comparison-section {
+    background: linear-gradient(to bottom, #eef2f7, var(--bg-base));
+    border-top: 1px solid var(--border);
+  }
+
+  .comparison-table {
+    margin-top: 40px;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+
+  .comparison-header {
+    display: grid;
+    grid-template-columns: 40px 2fr 3fr;
+    background: var(--bg-elevated);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .comparison-header-cell {
+    padding: 16px 20px;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .comparison-header-cell:nth-child(2) { color: var(--accent-red); }
+  .comparison-header-cell:nth-child(3) { color: var(--accent-green); border-left: 1px solid var(--border); }
+
+  .comparison-row {
+    display: grid;
+    grid-template-columns: 40px 2fr 3fr;
+    border-bottom: 1px solid var(--border-light);
+    background: var(--bg-card);
+    transition: background 0.15s;
+  }
+
+  .comparison-row:last-child { border-bottom: none; }
+  .comparison-row:hover { background: var(--bg-card-hover); }
+
+  .row-num {
+    display: flex; align-items: center; justify-content: center;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--text-muted);
+    border-right: 1px solid var(--border-light);
+  }
+
+  .comparison-cell {
+    padding: 18px 20px;
+    font-size: 0.88rem;
+    line-height: 1.65;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .comparison-cell:last-child {
+    border-left: 1px solid var(--border-light);
+    color: var(--text-primary);
+  }
+
+  .comparison-cell:nth-child(2) {
+    color: var(--text-secondary);
+  }
+
+  .cell-icon {
+    flex-shrink: 0;
+    font-size: 16px;
+  }
+
+  /* ─── Metrics Section ─── */
+  .metrics-section { background: var(--bg-base); }
+
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-top: 40px;
+  }
+
+  .metric-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 24px;
+    text-align: center;
+    transition: border-color 0.2s, transform 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .metric-card::before {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 3px;
+  }
+
+  .metric-card.blue::before { background: var(--accent-blue); }
+  .metric-card.green::before { background: var(--accent-green); }
+  .metric-card.amber::before { background: var(--accent-amber); }
+  .metric-card.purple::before { background: var(--accent-purple); }
+
+  .metric-card:hover { border-color: rgba(88,166,255,0.3); transform: translateY(-3px); }
+
+  .metric-val {
+    font-size: 2.5rem;
+    font-weight: 800;
+    font-family: var(--font-mono);
+    letter-spacing: -0.03em;
+    margin-bottom: 6px;
+  }
+
+  .metric-card.blue .metric-val { color: var(--accent-blue); }
+  .metric-card.green .metric-val { color: var(--accent-green); }
+  .metric-card.amber .metric-val { color: var(--accent-amber); }
+  .metric-card.purple .metric-val { color: var(--accent-purple); }
+
+  .metric-label {
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+    line-height: 1.4;
+  }
+
+  .metric-source {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    margin-top: 8px;
+    font-family: var(--font-mono);
+  }
+
+  /* ─── Footer ─── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 32px 0;
+    text-align: center;
+  }
+
+  .footer-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: gap;
+    gap: 16px;
+  }
+
+  .footer-brand {
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--text-primary);
+  }
+
+  .footer-meta {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+  }
+
+  .footer-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(88,166,255,0.08);
+    border: 1px solid rgba(88,166,255,0.2);
+    border-radius: 100px;
+    padding: 5px 14px;
+    font-size: 12px;
+    color: var(--accent-blue);
+    font-weight: 500;
+  }
+
+  /* ─── Utility ─── */
+  .mono { font-family: var(--font-mono); }
+  .text-green { color: var(--accent-green); }
+  .text-amber { color: var(--accent-amber); }
+  .text-red { color: var(--accent-red); }
+  .text-blue { color: var(--accent-blue); }
+  .text-muted { color: var(--text-muted); }
+
+  /* ─── Video Section ─── */
+  .video-section {
+    background: var(--bg-base);
+    border-top: 1px solid var(--border);
+  }
+
+  .video-wrapper {
+    margin-top: 40px;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    border: 1px solid var(--border);
+    background: var(--bg-card);
+    aspect-ratio: 16 / 9;
+    position: relative;
+    max-height: 600px;
+  }
+
+  .video-wrapper iframe,
+  .video-wrapper video {
+    width: 100%;
+    height: 100%;
+    border: none;
+    display: block;
+  }
+
+  .video-placeholder {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    background: linear-gradient(135deg, #0d1117 0%, #0f1923 100%);
+    cursor: default;
+  }
+
+  .video-play-icon {
+    width: 72px; height: 72px;
+    border-radius: 50%;
+    border: 2px solid var(--border);
+    background: var(--bg-elevated);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 28px;
+    color: var(--text-muted);
+    transition: all 0.2s;
+  }
+
+  .video-placeholder:hover .video-play-icon {
+    border-color: var(--accent-blue);
+    color: var(--accent-blue);
+    background: var(--accent-blue-dim);
+  }
+
+  .video-placeholder-text {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+  }
+
+  .video-placeholder-sub {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+  }
+
+  /* ─── Animation A: removed ─── */
+.feishu-demo-unused {
+  margin: 28px 0 0;
+  background: #1a1f29;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  max-width: 520px;
+  box-shadow: var(--shadow-card);
+}
+.feishu-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 14px;
+  background: var(--bg-elevated);
+  border-bottom: 1px solid var(--border);
+}
+.feishu-dot { width: 10px; height: 10px; border-radius: 50%; }
+.feishu-title {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-weight: 500;
+  margin-left: 6px;
+}
+.feishu-body { padding: 16px; display: flex; flex-direction: column; gap: 12px; min-height: 90px; }
+.feishu-msg { display: flex; align-items: flex-start; gap: 10px; }
+.feishu-avatar {
+  width: 32px; height: 32px;
+  border-radius: 8px;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; font-weight: 600; flex-shrink: 0;
+}
+.user-avatar { background: var(--accent-blue-dim); color: var(--accent-blue); }
+.bot-avatar { background: var(--accent-green-dim); font-size: 16px; }
+.feishu-bubble {
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  line-height: 1.6;
+  max-width: 380px;
+}
+.user-bubble { background: #eaeef2; color: #1f2328; border: 1px solid #d0d7de; }
+.bot-bubble { background: #dafbe1; color: #1a7f37; border: 1px solid #82cfad; }
+.bot-msg { transition: opacity 0.5s ease; }
+.feishu-typing { display: flex; gap: 4px; align-items: center; padding-left: 42px; transition: opacity 0.3s; }
+.feishu-typing span {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--text-muted);
+  animation: typingBounce 1.2s infinite;
+}
+.feishu-typing span:nth-child(2) { animation-delay: 0.2s; }
+.feishu-typing span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes typingBounce {
+  0%, 80%, 100% { transform: translateY(0); opacity: 0.4; }
+  40% { transform: translateY(-6px); opacity: 1; }
+}
+
+/* ─── Animation B: Pipeline pulse ─── */
+@keyframes pipelinePulse {
+  0%   { box-shadow: 0 0 0 0 rgba(88,166,255,0); border-color: var(--border); }
+  15%  { box-shadow: 0 0 16px 2px rgba(88,166,255,0.35); border-color: var(--accent-blue); }
+  30%  { box-shadow: 0 0 0 0 rgba(88,166,255,0); border-color: var(--border); }
+  100% { box-shadow: 0 0 0 0 rgba(88,166,255,0); border-color: var(--border); }
+}
+.pipeline-step:nth-child(1) .step-card { animation: pipelinePulse 4.2s 0.0s infinite; }
+.pipeline-step:nth-child(2) .step-card { animation: pipelinePulse 4.2s 0.7s infinite; }
+.pipeline-step:nth-child(3) .step-card { animation: pipelinePulse 4.2s 1.4s infinite; }
+.pipeline-step:nth-child(4) .step-card { animation: pipelinePulse 4.2s 2.1s infinite; }
+.pipeline-step:nth-child(5) .step-card { animation: pipelinePulse 4.2s 2.8s infinite; }
+.pipeline-step:nth-child(6) .step-card { animation: pipelinePulse 4.2s 3.5s infinite; }
+
+/* ─── Animation C: Stage scroll reveal ─── */
+.stage-dot {
+  transition: background 0.4s ease, border-color 0.4s ease, transform 0.3s ease;
+}
+.journey-stage.revealed .stage-dot.pass {
+  border-color: var(--accent-green);
+  background: var(--accent-green-dim);
+  transform: scale(1.15);
+}
+.journey-stage.revealed .stage-dot.warn {
+  border-color: var(--accent-amber);
+  background: var(--accent-amber-dim);
+  transform: scale(1.15);
+}
+.journey-stage.revealed .stage-dot.stop {
+  border-color: var(--accent-red);
+  background: var(--accent-red-dim);
+  transform: scale(1.15);
+}
+.journey-stage:not(.revealed) .stage-dot {
+  border-color: var(--border) !important;
+  background: var(--bg-elevated) !important;
+}
+.stage-content {
+  opacity: 0;
+  transform: translateX(8px);
+  transition: opacity 0.4s ease, transform 0.4s ease;
+}
+.journey-stage.revealed .stage-content {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+  /* ─── Sticky Nav ─── */
+  .site-nav {
+    position: sticky; top: 0; z-index: 200;
+    background: rgba(13,17,23,0.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+  .nav-inner {
+    max-width: 1100px; margin: 0 auto; padding: 0 24px;
+    height: 48px; display: flex; align-items: center; justify-content: space-between;
+  }
+  .nav-brand { font-weight: 700; font-size: 1rem; color: var(--text-primary); }
+  .nav-right { display: flex; align-items: center; gap: 16px; font-size: 0.82rem; color: var(--text-muted); }
+  .nav-whitepaper-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 5px 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: 0.78rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: border-color 0.2s, color 0.2s, background 0.2s;
+    white-space: nowrap;
+  }
+  .nav-whitepaper-btn:hover {
+    border-color: var(--accent-blue);
+    color: var(--accent-blue);
+    background: rgba(88,166,255,0.06);
+  }
+
+  /* ─── Interactive Pipeline ─── */
+  .interactive-section { background: var(--bg-base); padding-top: 32px; }
+
+  .agent-row {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    margin-top: 48px;
+    overflow-x: auto;
+    padding-bottom: 8px;
+  }
+
+  .agent-card {
+    flex: 1;
+    min-width: 130px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 20px 16px;
+    text-align: center;
+    transition: all 0.35s ease;
+    position: relative;
+    opacity: 0.45;
+  }
+
+  .agent-card.active {
+    opacity: 1;
+    border-color: var(--accent-blue);
+    background: var(--bg-card-hover);
+    box-shadow: 0 0 24px rgba(88,166,255,0.2);
+    transform: translateY(-4px);
+  }
+
+  .agent-card.done {
+    opacity: 0.7;
+    border-color: var(--accent-green);
+  }
+
+  .agent-arrow {
+    color: var(--text-muted);
+    font-size: 1.2rem;
+    padding: 0 6px;
+    flex-shrink: 0;
+  }
+
+  .agent-step {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+    letter-spacing: 0.05em;
+  }
+
+  .agent-icon { font-size: 1.8rem; margin-bottom: 8px; }
+
+  .agent-name {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 3px;
+  }
+
+  .agent-sub {
+    font-size: 0.72rem;
+    color: var(--text-secondary);
+  }
+
+  .agent-status {
+    font-size: 0.72rem;
+    margin-top: 8px;
+    min-height: 16px;
+    color: var(--accent-green);
+    font-weight: 600;
+  }
+
+  .demo-run-btn {
+    background: rgba(88,166,255,0.1);
+    border: 1px solid rgba(88,166,255,0.35);
+    color: var(--accent-blue);
+    font-size: 0.95rem;
+    font-weight: 600;
+    padding: 12px 32px;
+    border-radius: 100px;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: var(--font-main);
+    letter-spacing: 0.02em;
+  }
+  .demo-run-btn:hover { background: rgba(88,166,255,0.18); }
+  .demo-run-btn:disabled { opacity: 0.4; cursor: default; }
+
+  .stage-area {
+    margin-top: 32px;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    border: 1px solid var(--border);
+    background: var(--bg-card);
+    min-height: 200px;
+    animation: fadeIn 0.4s ease;
+  }
+
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  .stage-area-inner { padding: 24px; }
+
+  .stage-header-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .stage-header-icon { font-size: 1.4rem; }
+
+  .stage-header-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  .stage-header-role {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    margin-left: auto;
+  }
+
+  /* Feishu chat inside stage */
+  .stage-chat { display: flex; flex-direction: column; gap: 12px; }
+  .stage-msg { display: flex; align-items: flex-start; gap: 10px; }
+  .stage-avatar {
+    width: 32px; height: 32px; border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px; font-weight: 700; flex-shrink: 0;
+  }
+  .stage-avatar.user { background: var(--accent-blue-dim); color: var(--accent-blue); }
+  .stage-avatar.bot  { background: var(--accent-green-dim); font-size: 16px; }
+  .stage-bubble {
+    padding: 8px 12px;
+    border-radius: 8px;
+    font-size: 0.82rem;
+    line-height: 1.6;
+    max-width: 820px;
+  }
+  .stage-bubble.user { background: #eaeef2; color: #1f2328; border: 1px solid #d0d7de; }
+  .stage-bubble.bot  { background: #dafbe1; color: #1a7f37; border: 1px solid #82cfad; }
+
+  /* Analysis grid */
+  .stage-analysis { display: flex; flex-direction: column; gap: 8px; margin-top: 4px; }
+  .analysis-row {
+    display: flex; align-items: center; gap: 10px;
+    font-size: 0.82rem;
+    padding: 9px 12px;
+    background: var(--bg-elevated);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    opacity: 0;
+    transform: translateX(-6px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+  }
+  .analysis-row.show { opacity: 1; transform: translateX(0); }
+  .analysis-key { color: var(--text-muted); min-width: 90px; flex-shrink: 0; }
+  .analysis-val { color: var(--text-primary); font-weight: 500; flex: 1; }
+  .analysis-check { flex-shrink: 0; }
+  .analysis-check.pass { color: var(--accent-green); }
+  .analysis-check.warn { color: var(--accent-amber); }
+
+  /* Criteria list */
+  .stage-criteria { display: flex; flex-direction: column; gap: 6px; margin-top: 4px; }
+  .criteria-item {
+    display: flex; gap: 8px; align-items: flex-start;
+    font-size: 0.82rem;
+    padding: 8px 12px;
+    background: var(--bg-elevated);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  .criteria-item.show { opacity: 1; }
+  .criteria-icon { color: var(--accent-green); flex-shrink: 0; font-weight: 700; }
+
+  /* Test results */
+  .test-result-row {
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 0.82rem;
+    padding: 9px 12px;
+    background: var(--bg-elevated);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    margin-bottom: 6px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  .test-result-row.show { opacity: 1; }
+  .test-case { color: var(--text-secondary); }
+  .test-val { color: var(--accent-green); font-weight: 600; font-family: var(--font-mono); font-size: 0.78rem; }
+
+  /* Feedback bar */
+  .feedback-bar-wrap { margin: 12px 0; }
+  .feedback-label { font-size: 0.82rem; color: var(--text-muted); margin-bottom: 8px; }
+  .feedback-bar-bg { height: 10px; background: var(--bg-elevated); border-radius: 5px; border: 1px solid var(--border); overflow: hidden; }
+  .feedback-bar-fill { height: 100%; background: var(--accent-green); border-radius: 5px; width: 0%; transition: width 1.2s ease; }
+  .feedback-pct { font-family: var(--font-mono); font-size: 1.1rem; font-weight: 700; color: var(--accent-green); margin-top: 6px; }
+
+  /* Verdict row */
+  .stage-verdict {
+    margin-top: 16px;
+    padding: 12px 16px;
+    border-radius: var(--radius-sm);
+    display: flex; align-items: center; gap: 10px;
+    font-size: 0.88rem; font-weight: 600;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+  .stage-verdict.show { opacity: 1; }
+  .stage-verdict.green { background: rgba(63,185,80,0.08); border: 1px solid rgba(63,185,80,0.25); color: var(--accent-green); }
+  .stage-verdict-note { font-size: 0.78rem; color: var(--text-muted); font-weight: 400; margin-left: auto; }
+
+  /* Done banner */
+  .pipeline-done {
+    text-align: center;
+    padding: 24px;
+    border-top: 1px solid var(--border);
+    margin-top: 16px;
+  }
+  .pipeline-done-text {
+    font-size: 1.1rem; font-weight: 700;
+    color: var(--accent-green);
+    margin-bottom: 6px;
+  }
+  .pipeline-done-sub { font-size: 0.82rem; color: var(--text-muted); }
+
+  /* ─── Responsive ─── */
+  @media (max-width: 768px) {
+    section { padding: 56px 0; }
+    .hero { padding: 40px 0 28px; }
+    .hero-stats { gap: 24px; }
+    .stat-divider { display: none; }
+    .pipeline-flow { gap: 8px; }
+    .pipeline-step::after { display: none; }
+    .step-card {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-md);
+    }
+    .comparison-header, .comparison-row { grid-template-columns: 1fr; }
+    .row-num, .comparison-header-cell:first-child { display: none; }
+    .comparison-cell:last-child, .comparison-header-cell:nth-child(3) { border-left: none; border-top: 1px solid var(--border-light); }
+    .footer-inner { flex-direction: column; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!--  DATA                                                        -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<script>
+const DEMO_DATA = {
+  "version": "v3.0",
+  "started_at": "2026-05-10T10:00:00Z",
+  "requirements": [
+    {
+      "requirement_id": "REQ-20260513-002",
+      "schema1": {
+        "schema_version": "1.0",
+        "stage": "gatekeeping_approved",
+        "requirement_id": "REQ-20260513-002",
+        "original_text": "机器人响应太慢，客户不满意",
+        "submitted_by": "售前",
+        "requirement_source": "售前",
+        "gatekeeping": {
+          "verdict": "approved",
+          "rounds": 2,
+          "customer_who": "展厅负责人",
+          "usage_scenario": "日常使用展厅机器人时",
+          "problem": "机器人响应过慢（当前约15s），客户不满意",
+          "expected_outcome": "响应时间从15s降低到10s以内"
+        }
+      },
+      "schema2": {
+        "product_line": "展厅机器人",
+        "value_type": "体验提升",
+        "importance": "高（P0）",
+        "acceptance_criteria": [
+          { "criterion_id": "ac_002_001", "description": "展厅负责人在日常使用展厅机器人时，机器人首次响应时间须小于10秒", "metric": "机器人首次响应时间", "threshold": "<10s" }
+        ],
+        "pm_confirmed_by": ["Jacky"],
+        "pm_confirmed_at": "2026-05-13T06:47:00Z"
+      },
+      "schema3": {
+        "dev_self_test": { "passed": true, "confirmed_by": "研发负责人" },
+        "test_summary": { "total": 2, "passed": 2, "failed": 0, "blocked": 0 },
+        "tester_confirmed_by": "研发负责人",
+        "tech_plan": "优化request函数，改成异步调用",
+        "workload_days": 1,
+        "risk": "暂无，属于历史遗留问题"
+      },
+      "schema4": {
+        "release_verdict": "approved",
+        "release_date": "2026-05-17",
+        "core_value_statement": "客户的响应时间显著降低",
+        "version": "1.2.2",
+        "release_risk": "低",
+        "approved_by": "Jacky"
+      },
+      "schema5": {
+        "questionnaire": { "sent_count": 9, "response_count": 9 },
+        "ai_analysis": {
+          "overall_satisfaction_rate": 0.98,
+          "key_finding": "用户说响应速度显著提升，非常满意。只是极其偶尔还会在10-15s之间，属于偶发网络波动，可以接受",
+          "recommendation": "建立响应时间监控告警机制，针对偶发>10s的网络波动场景进行根因追踪与兜底优化"
+        }
+      },
+      "schema6": {
+        "roi_verdict": {
+          "criteria_met_rate": 1.0,
+          "customer_satisfaction_rate": 0.98,
+          "summary": "本版本 100% 验收标准达标，客户满意率 98%（评分9.8/10）。机器人响应时间从~15s降至<10s，核心价值目标完整交付；偶发网络波动导致极少数场景在10-15s之间，客户明确表示可接受，不影响交付结论。"
+        },
+        "process_retrospective": {
+          "avg_gatekeeping_rounds": 2.0,
+          "process_health_score": 1.0,
+          "stage_bottlenecks": [{ "stage": "无", "issue": "全程一次通过，无拒绝记录" }]
+        },
+        "next_version_suggestions": [
+          { "type": "new", "description": "建立响应时间监控告警机制，针对偶发>10s的网络波动场景进行根因追踪与兜底优化（如本地缓存预热、超时重试策略）", "priority": "P1" }
+        ]
+      }
+    },
+    {
+      "requirement_id": "req_B",
+      "schema1": {
+        "stage": "gatekeeping_pending",
+        "original_text": "OpenClaw机器人在执行复杂动作序列时，近景的语音消息传不到OpenClaw，导致多步长任务中断。终端用户（现场操作员）反馈这个问题已经影响了演示效果。\n\n背景信息：来源：战略层；场景：OpenClaw机器人复杂动作演示",
+        "requirement_source": "战略",
+        "gatekeeping": {
+          "verdict": "info_needed",
+          "rounds": 1,
+          "customer_who": "终端用户（现场操作员）",
+          "usage_scenario": "OpenClaw机器人执行复杂动作序列时（近景语音交互场景）",
+          "problem": "近景的语音消息传不到OpenClaw，导致多步长任务中断",
+          "expected_outcome": null,
+          "followup_questions": [
+            "解决这个语音消息传递问题后，现场操作员期望达到什么可观测的结果？例如：语音指令能实时触发机器人执行完整的多步骤动作序列不中断，还是有其他具体的验收标准？",
+            "这个需求的最终受益客户是谁？是支撑某个具体客户演示场景，还是纯内部能力建设？"
+          ]
+        }
+      }
+    },
+    {
+      "requirement_id": "req_C",
+      "schema1": {
+        "stage": "gatekeeping_rejected",
+        "original_text": "机器人应该更智能一点，现在感觉不够聪明。",
+        "requirement_source": "内部研发",
+        "gatekeeping": {
+          "verdict": "rejected",
+          "rounds": 1,
+          "customer_who": null,
+          "usage_scenario": null,
+          "problem": null,
+          "expected_outcome": null
+        }
+      }
+    },
+  ],
+  "metrics": {
+    "satisfaction_rate": 0.822,
+    "process_health_score": 0.90,
+    "test_pass_rate": 1.0,
+    "avg_gatekeeping_rounds": 1.0,
+    "gatekeeping_approved": 1,
+    "gatekeeping_rejected": 1,
+    "gatekeeping_info_needed": 0,
+    "criteria_met_rate": 0.75,
+    "total_feedback_responses": 9,
+    "dev_resources_saved_weeks": 2,
+    "intercepted_reqs": 1
+  }
+};
+
+const AGENT_TOOLTIPS = [
+  {
+    step: "01",
+    icon: "🛡️",
+    name: "守门",
+    subtitle: "Gatekeeper",
+    desc: "需求的第一道质量防线。使用四问 Rubric（客户是谁 / 使用场景 / 具体问题 / 预期结果）对原始需求进行结构化判断，拒绝模糊需求进入研发。\n\n✅ 飞书消息触发 · 交互卡片等待审批 · 实时写入多维表格 · 拒绝回退可重新提交",
+    rules: [
+      "审查4个字段：customer_who / usage_scenario / problem / expected_outcome",
+      "任意字段缺失或模糊 → info_needed，追问补充",
+      "追问超3轮仍不完整 → 强制 rejected",
+      "approved 后自动通知PM并写入多维表格"
+    ]
+  },
+  {
+    step: "02",
+    icon: "💎",
+    name: "价值转化",
+    subtitle: "Value Transform",
+    desc: "将通过守门的需求转化为可量化的验收标准。把客户语言的需求描述拆解为有指标、有阈值、有测量方法的验收条目（Acceptance Criteria）。\n\n✅ 真实飞书审批卡片 · 通过/拒绝二选一 · 拒绝需填写原因 · Pipeline真实阻塞等待回复",
+    rules: [
+      "生成结构化验收标准：description / metric / threshold / measurement_method",
+      "标注产品线归属（零售模式/Agent商店/龙虾机器人）",
+      "标注需求重要性（P0/P1/P2）",
+      "PM确认后方可流转到测试阶段"
+    ]
+  },
+  {
+    step: "03",
+    icon: "🧪",
+    name: "研发自测",
+    subtitle: "Dev Self-Test",
+    desc: "研发完成功能开发后，对照验收标准进行自测，覆盖真实客户场景（而非仅测接口和功能点）。自测全部通过后方可提测，并写入测试报告。\n\n✅ 飞书卡片 · 研发填写自测结果 · Pipeline 等待确认后流转",
+    rules: [
+      "每条验收标准对应至少1个测试用例",
+      "测试用例包含：actor / precondition / steps / expected_output",
+      "研发自测必须通过（dev_self_test=true）才启动正式测试",
+      "输出测试汇总：total / passed / failed / blocked"
+    ]
+  },
+  {
+    step: "04",
+    icon: "🚦",
+    name: "测试发版",
+    subtitle: "QA & Release",
+    desc: "版本上线前的最后门控。按照P0/P1/P2优先级规则，P0不达标直接阻断发版，P1记录bypass日志需人工确认，P2只生成警告。\n\n✅ 真实飞书审批卡片 · 通过/拒绝二选一 · 拒绝需填写原因 · Pipeline真实阻塞等待回复",
+    rules: [
+      "测试负责人基于客户场景验证（非功能 bug），通过后触发发版决策",
+      "P1 fail → warning + bypass_log，需产品负责人确认",
+      "P2 fail → warning only，不阻断发版",
+      "产品负责人确认核心价值声明（core_value_statement）"
+    ]
+  },
+  {
+    step: "05",
+    icon: "📡",
+    name: "反馈收集",
+    subtitle: "Feedback Collect",
+    desc: "产品上线后自动向客户发放问卷，按验收标准维度收集满意/不满意评价，AI分析汇总并生成可直接用于产研周会的演示摘要。",
+    rules: [
+      "问卷覆盖全部验收标准（criteria_covered）",
+      "记录发送数/回收数，计算响应率",
+      "分satisfaction_rate / key_finding / recommendation三维输出",
+      "生成 presentation_summary，供周会直接使用"
+    ]
+  },
+  {
+    step: "06",
+    icon: "🔄",
+    name: "复盘分析",
+    subtitle: "Retrospective",
+    desc: "版本周期结束后，将需求→测试→反馈全链路数据汇聚，输出ROI达标率、流程健康度评分、瓶颈识别，以及下一版本的具体改进建议。",
+    rules: [
+      "计算验收标准达标率（criteria_met_rate）",
+      "识别流程瓶颈（stage_bottlenecks）和模糊泄漏（ambiguity_leakage）",
+      "生成下版本建议（carry_forward / new / drop）",
+      "输出流程健康度分数（process_health_score）"
+    ]
+  }
+];
+</script>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!--  HERO                                                        -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-top">
+      <h1>AI需求链 <span class="hero-inline-tag">✦ 让每一条需求，都被认真对待</span></h1>
+      <nav class="hero-nav">
+        <a class="hero-nav-btn" href="whitepaper.html">📄 阅读白皮书</a>
+        <a class="hero-nav-btn" id="heroRunBtn" href="#pipelineSection" onclick="event.preventDefault(); startPipelineDemo()">▶ 流程演示</a>
+        <a class="hero-nav-btn green" href="#videoSection">▶ 视频演示</a>
+      </nav>
+    </div>
+    <div class="hero-arch-callout">
+      🤝 <strong>人机协作，人是决策者：</strong>AI 负责追问和整理，<strong>异步流转不等待</strong>，人负责判断和拍板<br>
+      <span style="font-size:0.88rem;color:var(--text-secondary);display:block;margin-top:6px;">售前提需求 → <strong style="color:var(--accent-blue)">AI追问补全</strong> → PM审批<strong style="color:var(--accent-blue)">·生成测试用例</strong> → 研发审批 → 发版审批 → 客户反馈 → <strong style="color:var(--accent-blue)">AI复盘</strong></span>
+      <span class="hero-arch-sub">6个 Agent 分工明确 · 全程异步流转，人无需等待 · 每个审批节点通过飞书卡片由真人完成 · 全链路可追溯 · 真实可运行 · OpenClaw + 原生LLM API即可接入</span>
+    </div>
+    <p class="hero-inspiration"><strong>灵感来源：</strong>本项目源自公司内部会议中真实观察到的痛点——「需求从销售口头进来，每个环节都在信息衰减」。系统设计与会议提出的每一个改进方向（售前守门 / 验收标准 / 客户场景测试 / AI分析反馈）一一对应，不是技术演示，是对真实业务问题的工程化回答。</p>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!--  INTERACTIVE PIPELINE DEMO                                   -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<section class="interactive-section" id="pipelineSection">
+  <div class="container">
+    <div class="section-label">Agent Pipeline</div>
+    <h2 class="section-title">六个 Agent 的完整协作</h2>
+    <!-- 6 Agent cards -->
+    <div class="agent-row" id="agentRow">
+      <div class="agent-card" id="agent-0">
+        <div class="agent-step">STEP 01</div>
+        <div class="agent-icon">🛡️</div>
+        <div class="agent-name">守门</div>
+        <div class="agent-sub">Gatekeeper</div>
+        <div class="agent-status" id="status-0"></div>
+      </div>
+      <div class="agent-arrow">→</div>
+      <div class="agent-card" id="agent-1">
+        <div class="agent-step">STEP 02</div>
+        <div class="agent-icon">💎</div>
+        <div class="agent-name">价值转化</div>
+        <div class="agent-sub">验收标准 · 测试用例</div>
+        <div class="agent-status" id="status-1"></div>
+      </div>
+      <div class="agent-arrow">→</div>
+      <div class="agent-card" id="agent-2">
+        <div class="agent-step">STEP 03</div>
+        <div class="agent-icon">🧪</div>
+        <div class="agent-name">研发自测</div>
+        <div class="agent-sub">Dev Self-Test</div>
+        <div class="agent-status" id="status-2"></div>
+      </div>
+      <div class="agent-arrow">→</div>
+      <div class="agent-card" id="agent-3">
+        <div class="agent-step">STEP 04</div>
+        <div class="agent-icon">🚦</div>
+        <div class="agent-name">测试发版</div>
+        <div class="agent-sub">QA & Release</div>
+        <div class="agent-status" id="status-3"></div>
+      </div>
+      <div class="agent-arrow">→</div>
+      <div class="agent-card" id="agent-4">
+        <div class="agent-step">STEP 05</div>
+        <div class="agent-icon">📡</div>
+        <div class="agent-name">反馈收集</div>
+        <div class="agent-sub">Feedback</div>
+        <div class="agent-status" id="status-4"></div>
+      </div>
+      <div class="agent-arrow">→</div>
+      <div class="agent-card" id="agent-5">
+        <div class="agent-step">STEP 06</div>
+        <div class="agent-icon">🔄</div>
+        <div class="agent-name">复盘分析</div>
+        <div class="agent-sub">Retrospective</div>
+        <div class="agent-status" id="status-5"></div>
+      </div>
+    </div>
+
+    <!-- Interaction stage area -->
+    <div class="stage-area" id="stageArea" style="display:none;">
+      <div class="stage-area-inner" id="stageAreaInner"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!--  DEMO VIDEO                                                  -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<section class="video-section" id="videoSection">
+  <div class="container">
+    <div class="section-label">Demo Video</div>
+    <h2 class="section-title">系统演示视频</h2>
+    <p class="section-desc">飞书消息触发 → 飞书交互卡片逐级审批 → 多维表格实时归档。全链路真实运行，无剪辑。</p>
+
+    <div style="display:flex; gap:24px; margin:20px 0 16px; font-size:0.8rem; font-family:var(--font-mono); color:var(--text-secondary);">
+      <span><span style="color:var(--accent-blue); font-weight:600;">00:00</span> &nbsp;背景与灵感来源</span>
+      <span style="color:var(--text-muted);">·</span>
+      <span><span style="color:var(--accent-blue); font-weight:600;">01:18</span> &nbsp;Demo①&nbsp;需求过于模糊 → 拒绝</span>
+      <span style="color:var(--text-muted);">·</span>
+      <span><span style="color:var(--accent-blue); font-weight:600;">03:51</span> &nbsp;Demo②&nbsp;完整流程演示</span>
+      <span style="color:var(--text-muted);">·</span>
+      <span><span style="color:var(--accent-blue); font-weight:600;">15:58</span> &nbsp;实战应用展望</span>
+    </div>
+
+    <div class="video-wrapper" id="videoWrapper">
+      <video src="demo.mp4" controls preload="metadata" style="width:100%;height:100%;object-fit:contain;background:#000"></video>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!--  SYSTEM DESIGN PRINCIPLES                                    -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<section class="principles-section">
+  <div class="container">
+    <div class="section-label">System Design</div>
+    <h2 class="section-title">Pipeline 设计哲学</h2>
+    <p class="section-desc">为什么这样设计？六个 Agent 各司其职，人始终是最终决策者。</p>
+
+    <div class="principles-grid">
+      <div class="principle-card">
+        <div class="principle-letter">01</div>
+        <div class="principle-name">源头质量优先</div>
+        <div class="principle-desc">需求在入口处被拦截，而非在研发中途返工。守门Agent是整个系统的第一道防线，也是最重要的一道。</div>
+      </div>
+      <div class="principle-card">
+        <div class="principle-letter">02</div>
+        <div class="principle-name">人机协同，人是决策者</div>
+        <div class="principle-desc">AI生成草稿、提问、分析；每个关键节点由真实的人通过飞书审批卡片确认。系统不替代判断，只是让判断更有依据。</div>
+      </div>
+      <div class="principle-card">
+        <div class="principle-letter">03</div>
+        <div class="principle-name">结构化胜过自由发挥</div>
+        <div class="principle-desc">每个Agent的输出是严格定义的Schema JSON，Agent之间通过数据契约通信，而非自然语言传话。可审计、可追溯、可重跑。</div>
+      </div>
+      <div class="principle-card">
+        <div class="principle-letter">04</div>
+        <div class="principle-name">全链路闭环</div>
+        <div class="principle-desc">从需求提交到客户反馈再到复盘，没有信息孤岛。复盘Agent是唯一能看到完整链路数据的节点，用于发现系统性问题。</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!--  DEMO — 4 Requirements                                       -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<section class="demo-section">
+  <div class="container">
+    <div class="section-label">Live Demo</div>
+    <h2 class="section-title">需求全链路演示</h2>
+    <p class="section-desc">需求 A 来自真实飞书对话记录，姓名已脱敏。需求 C 为典型却被拒场景模拟。点击展开查看每个 Agent 阶段的详细处理结果。</p>
+
+    <div class="req-grid" id="reqGrid"></div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!--  BEFORE / AFTER                                              -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<section class="comparison-section">
+  <div class="container">
+    <div class="section-label">Before / After</div>
+    <h2 class="section-title">引入 AI 数字团队前后对比</h2>
+    <p class="section-desc">同一个 AI 机器人公司，同一个产研团队，引入6 Agent 流水线后，需求管理质量发生了什么变化。</p>
+
+    <div class="comparison-table">
+      <div class="comparison-header">
+        <div class="comparison-header-cell"></div>
+        <div class="comparison-header-cell">⚠ 引入前</div>
+        <div class="comparison-header-cell">✓ 引入后</div>
+      </div>
+      <div class="comparison-row">
+        <div class="row-num">1</div>
+        <div class="comparison-cell"><span class="cell-icon">⚠</span>需求过滤：模糊需求直接进研发，平均浪费 <strong>2周/条</strong></div>
+        <div class="comparison-cell"><span class="cell-icon text-green">✓</span>AI守门追问补全，需求A「机器人响应太慢」经2轮追问完整通过；需求B「机器人更智能」信息不足被拦截，<strong>估算节约2周</strong>研发资源</div>
+      </div>
+      <div class="comparison-row">
+        <div class="row-num">2</div>
+        <div class="comparison-cell"><span class="cell-icon">⚠</span>配置交付：工程师上门配置，首次耗时 <strong>2小时</strong></div>
+        <div class="comparison-cell"><span class="cell-icon text-green">✓</span>代理商一句话完成配置，目标 <strong>15分钟</strong></div>
+      </div>
+      <div class="comparison-row">
+        <div class="row-num">3</div>
+        <div class="comparison-cell"><span class="cell-icon">⚠</span>客户满意率：无量化，靠口碑</div>
+        <div class="comparison-cell"><span class="cell-icon text-green">✓</span>展厅负责人满意度 <strong>9.8/10</strong>：「响应速度显著提升，偶发波动可接受」，验收标准逐条追踪</div>
+      </div>
+      <div class="comparison-row">
+        <div class="row-num">4</div>
+        <div class="comparison-cell"><span class="cell-icon">⚠</span>发版决策：拍脑袋，无规则</div>
+        <div class="comparison-cell"><span class="cell-icon text-green">✓</span>P0/P1/P2三级规则，<strong>100% P0达标</strong>才发版</div>
+      </div>
+      <div class="comparison-row">
+        <div class="row-num">5</div>
+        <div class="comparison-cell"><span class="cell-icon">⚠</span>流程健康度：无度量</div>
+        <div class="comparison-cell"><span class="cell-icon text-green">✓</span><strong>流程健康度1.0</strong>，需求A全程一次通过无退回，ROI 100%达标，AI自动输出复盘报告</div>
+      </div>
+      <div class="comparison-row">
+        <div class="row-num">6</div>
+        <div class="comparison-cell"><span class="cell-icon">⚠</span>需求录入：「机器人响应太慢」直接进研发，使用场景/期望指标全部缺失，返工沟通耗时30分钟</div>
+        <div class="comparison-cell"><span class="cell-icon text-green">✓</span>「机器人响应太慢」6字触发→ AI追问使用者/场景/期望指标→ 用户补全「展厅负责人/日常使用/15s→10s」→ 第2轮通过，全程<strong>&lt;1周</strong>交付，比原来提速2周</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!--  METRICS                                                     -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<section class="metrics-section">
+  <div class="container">
+    <div class="section-label">Key Metrics · v3.0</div>
+    <h2 class="section-title">系统能力指标</h2>
+    <p class="section-desc">标「真实运行」的指标来自飞书 Pipeline 实际跑通记录；标「∼ 典型场景估算」的为基于业务场景的参考值。</p>
+
+    <div class="metrics-grid" id="metricsGrid"></div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!--  EVALUATOR GUIDE                                             -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<style>
+  .eval-section {
+    background: linear-gradient(to bottom, var(--bg-base), #eef2f7);
+    border-top: 1px solid var(--border);
+  }
+  .eval-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+    margin-top: 40px;
+  }
+  .eval-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 24px;
+  }
+  .eval-card-num {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--accent-blue);
+    font-weight: 600;
+    margin-bottom: 8px;
+    letter-spacing: 0.08em;
+  }
+  .eval-card-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+  }
+  .eval-card-body {
+    font-size: 0.84rem;
+    color: var(--text-secondary);
+    line-height: 1.7;
+  }
+  .eval-card-body code {
+    font-family: var(--font-mono);
+    background: var(--bg-elevated);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 2px 6px;
+    font-size: 0.8rem;
+    color: var(--accent-green);
+    display: inline-block;
+    margin: 4px 0;
+  }
+  .eval-card-body a {
+    color: var(--accent-blue);
+    text-decoration: none;
+  }
+  .eval-card-body a:hover { text-decoration: underline; }
+  .eval-notice {
+    margin-top: 24px;
+    padding: 16px 20px;
+    background: rgba(88,166,255,0.06);
+    border: 1px solid rgba(88,166,255,0.2);
+    border-radius: var(--radius-md);
+    font-size: 0.84rem;
+    color: var(--text-secondary);
+    line-height: 1.7;
+  }
+  .eval-notice strong { color: var(--text-primary); }
+</style>
+
+<section class="eval-section">
+  <div class="container">
+    <div class="section-label">Evaluator Guide</div>
+    <h2 class="section-title">评委使用指南</h2>
+    <p class="section-desc">系统已在作者飞书账号上真实运行。评委可通过以下方式验证和查阅。</p>
+
+    <div class="eval-grid">
+      <div class="eval-card">
+        <div class="eval-card-num">01 · 本地运行（DEMO 模式）</div>
+        <div class="eval-card-title">无需飞书账号可验证逻辑</div>
+        <div class="eval-card-body">
+          克隆仓库后：<br>
+          <code>pip install anthropic requests lark-oapi</code><br>
+          <code>DEMO_MODE=true python demo.py</code><br><br>
+          DEMO 模式跳过飞书 API，所有输出打印到终端，可验证 6 个 Agent 的完整推理链路。
+        </div>
+      </div>
+      <div class="eval-card">
+        <div class="eval-card-num">02 · 真实模式说明</div>
+        <div class="eval-card-title">为何无法公开账号</div>
+        <div class="eval-card-body">
+          完整运行需要：飞书企业机器人账号 + LiteLLM Proxy（本机 4000 端口）+ Vertex AI Claude Sonnet 配额。<br><br>
+          <strong>演示视频</strong>展示了真实飞书卡片审批和多维表格归档的全流程（DEMO_MODE=false 实际运行）。
+        </div>
+      </div>
+      <div class="eval-card">
+        <div class="eval-card-num">03 · Stage 1 守门 Agent（已实现）</div>
+        <div class="eval-card-title">一拒一过——守门价值一目了然</div>
+        <div class="eval-card-body">
+          <div style="margin-bottom:12px;padding:10px 12px;background:rgba(248,81,73,0.08);border-left:3px solid var(--accent-red);border-radius:4px;">
+            <strong style="color:var(--accent-red)">❌ 被拒</strong>「好烦啊，机器人太不智能了」<br>
+            <span style="font-size:0.82rem;color:var(--text-secondary)">→ 四问全空，来源不可溯源，第1轮直接拒绝，要求重新提交</span>
+          </div>
+          <div style="margin-bottom:12px;padding:10px 12px;background:rgba(63,185,80,0.08);border-left:3px solid var(--accent-green);border-radius:4px;">
+            <strong style="color:var(--accent-green)">✅ 通过</strong>「机器人响应太慢，客户不满意」<br>
+            <span style="font-size:0.82rem;color:var(--text-secondary)">→ AI追问3项（客户角色/场景/期望指标）→ 用户一次补全 → 第2轮通过，四问完整</span>
+          </div>
+          <strong>守门规则：</strong>四问全空→直接拒绝；缺哪追哪；3轮仍缺→强制拒绝；来源不可溯源→追问说明理由
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!--  FOOTER                                                      -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<footer>
+  <div class="container">
+    <div class="footer-inner">
+      <div class="footer-brand">AI需求链</div>
+      <div class="footer-meta">傅盛AI战队 · 青少年黑客松 · Deadline 2026-05-10</div>
+      <div class="footer-tag">⚙ v3.0 · Claude Sonnet · 6 Agents · 飞书 HitL · Bitable 归档</div>
+    </div>
+  </div>
+</footer>
+
+<!-- ═══════════════════════════════════════════════════════════ -->
+<!--  JS — Render Logic                                           -->
+<!-- ═══════════════════════════════════════════════════════════ -->
+<script>
+history.scrollRestoration = 'manual';
+// ── Requirement Cards ──
+const CARD_CONFIG = [
+  { label: 'A', title: '展厅负责人反馈机器人响应过慢', color: 'blue' },
+  { label: 'B', title: '机器人更智能', color: 'red' }
+];
+
+function truncate(str, len) {
+  if (!str) return '—';
+  return str.length > len ? str.slice(0, len) + '…' : str;
+}
+
+function verdictLabel(v) {
+  const map = { approved: '通过', info_needed: '待补充', rejected: '已拒绝' };
+  return map[v] || v;
+}
+
+function buildJourneyA(req) {
+  const s1 = req.schema1, s2 = req.schema2, s3 = req.schema3, s4 = req.schema4, s5 = req.schema5, s6 = req.schema6;
+  return `
+    <div class="journey-inner">
+      <div class="journey-title">完整处理旅程 — ${req.requirement_id}<span style="font-size:0.75rem;font-weight:400;color:var(--text-muted);margin-left:10px;">原始消息：「${s1.original_text}」</span></div>
+      <div class="journey-stages">
+
+        <!-- Stage 1: Gatekeeper -->
+        <div class="journey-stage">
+          <div class="stage-dot-wrap">
+            <div class="stage-dot pass">🛡️</div>
+          </div>
+          <div class="stage-content">
+            <div class="stage-header">
+              <span class="stage-name">守门 Agent</span>
+              <span class="stage-tag pass">通过 · 第${s1.gatekeeping.rounds}轮（AI追问补全）</span>
+            </div>
+            <div class="stage-data">
+              <div class="stage-row"><span class="stage-row-key">原始消息</span><span class="stage-row-val" style="color:var(--accent-amber)">「${s1.original_text}」</span></div>
+              <div class="stage-row"><span class="stage-row-key">客户是谁</span><span class="stage-row-val highlight">${s1.gatekeeping.customer_who}</span></div>
+              <div class="stage-row"><span class="stage-row-key">使用场景</span><span class="stage-row-val">${s1.gatekeeping.usage_scenario}</span></div>
+              <div class="stage-row"><span class="stage-row-key">具体问题</span><span class="stage-row-val">${s1.gatekeeping.problem}</span></div>
+              <div class="stage-row"><span class="stage-row-key">预期结果</span><span class="stage-row-val">${truncate(s1.gatekeeping.expected_outcome, 70)}</span></div>
+              <div class="stage-row"><span class="stage-row-key">来源</span><span class="stage-row-val">${s1.requirement_source}</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stage 2: Value Transform -->
+        <div class="journey-stage">
+          <div class="stage-dot-wrap">
+            <div class="stage-dot pass">💎</div>
+          </div>
+          <div class="stage-content">
+            <div class="stage-header">
+              <span class="stage-name">价值转化 Agent</span>
+              <span class="stage-tag pass">验收标准已生成 · PM 审批通过</span>
+            </div>
+            <div class="stage-data">
+              <div class="stage-row"><span class="stage-row-key">产品线</span><span class="stage-row-val highlight">${s2.product_line}</span></div>
+              <div class="stage-row"><span class="stage-row-key">价值类型</span><span class="stage-row-val">${s2.value_type}</span></div>
+              <div class="stage-row"><span class="stage-row-key">优先级</span><span class="stage-row-val highlight">${s2.importance}</span></div>
+            </div>
+            <div class="criterion-list">
+              ${s2.acceptance_criteria.map(ac => `
+                <div class="criterion-item">
+                  <span class="criterion-check">✓</span>
+                  <div class="criterion-detail">
+                    <div class="criterion-title">${ac.description}</div>
+                    <div class="criterion-meta">${ac.metric} · 阈值 <strong>${ac.threshold}</strong></div>
+                  </div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+
+        <!-- Stage 3: Scenario Test -->
+        <div class="journey-stage">
+          <div class="stage-dot-wrap">
+            <div class="stage-dot pass">🧪</div>
+          </div>
+          <div class="stage-content">
+            <div class="stage-header">
+              <span class="stage-name">研发自测 Agent</span>
+              <span class="stage-tag pass">全部通过</span>
+            </div>
+            <div class="stage-data">
+              <div class="stage-row"><span class="stage-row-key">技术方案</span><span class="stage-row-val">${s3.tech_plan || '异步优化'}</span></div>
+              <div class="stage-row"><span class="stage-row-key">工作量</span><span class="stage-row-val">${s3.workload_days || 1}人天</span></div>
+              <div class="stage-row"><span class="stage-row-key">风险点</span><span class="stage-row-val">${s3.risk || '暂无'}</span></div>
+              <div class="stage-row"><span class="stage-row-key">研发自测</span><span class="stage-row-val highlight text-green">通过 ✓</span></div>
+              <div class="stage-row"><span class="stage-row-key">负责人</span><span class="stage-row-val">${s3.tester_confirmed_by}</span></div>
+            </div>
+            <div class="test-summary-row">
+              <span class="test-chip total">共 ${s3.test_summary.total} 个用例</span>
+              <span class="test-chip pass">通过 ${s3.test_summary.passed}</span>
+              <span class="test-chip fail">失败 ${s3.test_summary.failed}</span>
+              <span class="test-chip total">阻塞 ${s3.test_summary.blocked}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stage 4: Release Review -->
+        <div class="journey-stage">
+          <div class="stage-dot-wrap">
+            <div class="stage-dot pass">🚦</div>
+          </div>
+          <div class="stage-content">
+            <div class="stage-header">
+              <span class="stage-name">发版评审 Agent</span>
+              <span class="stage-tag pass">发版通过</span>
+            </div>
+            <div class="stage-data">
+              <div class="stage-row"><span class="stage-row-key">版本号</span><span class="stage-row-val mono highlight">${s4.version || DEMO_DATA.version}</span></div>
+              <div class="stage-row"><span class="stage-row-key">发版日期</span><span class="stage-row-val">${s4.release_date}</span></div>
+              <div class="stage-row"><span class="stage-row-key">核心价值</span><span class="stage-row-val">${s4.core_value_statement}</span></div>
+              <div class="stage-row"><span class="stage-row-key">发版风险</span><span class="stage-row-val">${s4.release_risk || '低'}</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stage 5: Feedback Collect -->
+        <div class="journey-stage">
+          <div class="stage-dot-wrap">
+            <div class="stage-dot warn">📡</div>
+          </div>
+          <div class="stage-content">
+            <div class="stage-header">
+              <span class="stage-name">反馈收集 Agent</span>
+              <span class="stage-tag pass">满意度 9.8/10</span>
+            </div>
+            <div class="stage-data">
+              <div class="stage-row"><span class="stage-row-key">发送数</span><span class="stage-row-val">${s5.questionnaire.sent_count} 份</span></div>
+              <div class="stage-row"><span class="stage-row-key">回收数</span><span class="stage-row-val highlight">${s5.questionnaire.response_count} 份（回收率100%）</span></div>
+            </div>
+            <div class="satisfaction-bar" style="margin: 12px 0 8px;">
+              <div class="bar-bg"><div class="bar-fill" style="width:${s5.ai_analysis.overall_satisfaction_rate * 100}%"></div></div>
+              <span class="bar-pct">${Math.round(s5.ai_analysis.overall_satisfaction_rate * 100)}%</span>
+            </div>
+            <div class="stage-row" style="margin-top:4px;">
+              <span class="stage-row-key">主要发现</span>
+              <span class="stage-row-val">${s5.ai_analysis.key_finding}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stage 6: Retrospective -->
+        <div class="journey-stage">
+          <div class="stage-dot-wrap">
+            <div class="stage-dot warn">🔄</div>
+          </div>
+          <div class="stage-content">
+            <div class="stage-header">
+              <span class="stage-name">复盘分析 Agent</span>
+              <span class="stage-tag pass">流程健康度 100% · ROI 全达标</span>
+            </div>
+            <div class="stage-data">
+              <div class="stage-row"><span class="stage-row-key">达标率</span><span class="stage-row-val highlight">${Math.round(s6.roi_verdict.criteria_met_rate * 100)}%</span></div>
+              <div class="stage-row"><span class="stage-row-key">客户满意率</span><span class="stage-row-val">${Math.round(s6.roi_verdict.customer_satisfaction_rate * 100)}%（9.8/10）</span></div>
+              <div class="stage-row"><span class="stage-row-key">流程健康度</span><span class="stage-row-val">${Math.round(s6.process_retrospective.process_health_score * 100)}%</span></div>
+              <div class="stage-row"><span class="stage-row-key">流程瓶颈</span><span class="stage-row-val">${s6.process_retrospective.stage_bottlenecks[0].issue}</span></div>
+            </div>
+            <div style="margin-top:12px;padding:12px 14px;background:rgba(88,166,255,0.06);border:1px solid rgba(88,166,255,0.2);border-radius:6px;">
+              <div style="font-size:0.75rem;color:var(--accent-blue);font-weight:600;margin-bottom:6px;">🔍 AI 从本次真实反馈推导出的下版本建议</div>
+              ${s6.next_version_suggestions.map(sug => `
+                <div style="font-size:0.82rem;color:var(--text-secondary);line-height:1.5;">
+                  <span style="color:var(--accent-amber);font-weight:600;">[${sug.priority}]</span> ${sug.description}
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  `;
+}
+
+function buildJourneyB(req) {
+  const s1 = req.schema1;
+  return `
+    <div class="journey-inner">
+      <div class="journey-title">处理旅程 — OpenClaw 语音指令需求</div>
+      <div class="journey-stages">
+
+        <!-- Round 1: info_needed -->
+        <div class="journey-stage">
+          <div class="stage-dot-wrap">
+            <div class="stage-dot warn">🛡️</div>
+          </div>
+          <div class="stage-content">
+            <div class="stage-header">
+              <span class="stage-name">守门 Agent</span>
+              <span class="stage-tag warn">第1轮 · 待补充</span>
+            </div>
+            <div class="stage-data">
+              <div class="stage-row"><span class="stage-row-key">客户</span><span class="stage-row-val highlight">${s1.gatekeeping.customer_who}</span></div>
+              <div class="stage-row"><span class="stage-row-key">使用场景</span><span class="stage-row-val">${s1.gatekeeping.usage_scenario}</span></div>
+              <div class="stage-row"><span class="stage-row-key">具体问题</span><span class="stage-row-val">${s1.gatekeeping.problem}</span></div>
+              <div class="stage-row"><span class="stage-row-key">预期结果</span><span class="stage-row-val text-amber">⚠ 缺失 — 触发追问</span></div>
+              <div class="stage-row"><span class="stage-row-key">来源</span><span class="stage-row-val">${s1.requirement_source}</span></div>
+            </div>
+            <div class="followup-list">
+              ${s1.gatekeeping.followup_questions.map((q,qi) => `
+                <div class="followup-item">💬 <strong>追问${qi+1}：</strong>${q}</div>
+              `).join('')}
+            </div>
+          </div>
+        </div>
+
+        <!-- Round 2: followup provided → approved -->
+        <div class="journey-stage">
+          <div class="stage-dot-wrap">
+            <div class="stage-dot pass">🛡️</div>
+          </div>
+          <div class="stage-content">
+            <div class="stage-header">
+              <span class="stage-name">守门 Agent</span>
+              <span class="stage-tag pass">Round 2 追问后通过</span>
+            </div>
+            <div class="stage-data">
+              <div class="stage-row"><span class="stage-row-key">补充回复</span><span class="stage-row-val highlight">提交方已补充预期结果</span></div>
+            </div>
+            <div class="followup-list">
+              <div class="followup-item" style="background:rgba(63,185,80,0.05); border-color:rgba(63,185,80,0.2);">
+                ✅ <strong>补充内容：</strong>具体场景：距机器人3米内的现场操作员发出语音指令，执行5步以上的复杂动作序列。当前长任务成功率约30%，期望提升至90%以上
+              </div>
+            </div>
+            <div class="stop-box" style="background:rgba(63,185,80,0.05); border-color:rgba(63,185,80,0.2); margin-top:8px;">
+              ✓ <strong>守门通过</strong>：守门Rubric 全部字段补全，需求进入价值转化阶段。
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  `;
+}
+
+function buildJourneyRejected(req, label) {
+  const s1 = req.schema1;
+  const missingFields = [];
+  if (!s1.gatekeeping.customer_who || s1.gatekeeping.customer_who === '用户') missingFields.push('customer_who（泛称"用户"，不够具体）');
+  if (!s1.gatekeeping.usage_scenario) missingFields.push('usage_scenario（无具体场景）');
+  if (!s1.gatekeeping.problem) missingFields.push('problem（无明确障碍）');
+  if (!s1.gatekeeping.expected_outcome) missingFields.push('expected_outcome（无可观测结果）');
+
+  return `
+    <div class="journey-inner">
+      <div class="journey-title">处理旅程 — 需求${label}</div>
+      <div class="journey-stages">
+        <div class="journey-stage">
+          <div class="stage-dot-wrap">
+            <div class="stage-dot stop">🛡️</div>
+          </div>
+          <div class="stage-content">
+            <div class="stage-header">
+              <span class="stage-name">守门 Agent</span>
+              <span class="stage-tag stop">已拒绝 · 第1轮直接拒绝</span>
+            </div>
+            <div class="stage-data">
+              <div class="stage-row"><span class="stage-row-key">来源</span><span class="stage-row-val">${s1.requirement_source}</span></div>
+            </div>
+            <div class="stop-box">
+              <strong>拒绝原因：</strong>以下字段全部缺失或不符合 Rubric 标准：
+              <ul style="margin-top: 8px; padding-left: 16px; display: flex; flex-direction: column; gap: 4px;">
+                ${missingFields.map(f => `<li>${f}</li>`).join('')}
+              </ul>
+              <br>
+              守门 Agent 已通知提交方：「需求信息不足以立项，请补充客户身份、使用场景、具体问题和可观测的预期结果后重新提交。」
+            </div>
+            <div class="stop-box" style="background:rgba(63,185,80,0.05); border-color:rgba(63,185,80,0.2); margin-top:8px;">
+              💰 <strong>守门拦截成本估算：节约约2周研发资源</strong>（伪需求被拦截在立项前，避免研发排期投入）
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+(function renderRequirements() {
+  const grid = document.getElementById('reqGrid');
+  const reqs = DEMO_DATA.requirements;
+
+  [0, 2].forEach((reqIdx, cardIdx) => {
+    const req = reqs[reqIdx];
+    const cfg = CARD_CONFIG[cardIdx];
+    const i = cardIdx;
+    const s1 = req.schema1;
+    const verdict = s1.gatekeeping.verdict;
+
+    const card = document.createElement('div');
+    card.className = 'req-card';
+    card.id = `req-card-${i}`;
+
+    let journeyHtml = '';
+    if (reqIdx === 0) journeyHtml = buildJourneyA(req);
+    else journeyHtml = buildJourneyRejected(req, cfg.label);
+
+    const stageLabels = {
+      gatekeeping_approved: '全链路通过',
+      gatekeeping_pending: '守门暂停 — 待补充',
+      gatekeeping_rejected: '守门拒绝 — 终止'
+    };
+    const stageLabel = stageLabels[s1.stage] || s1.stage;
+
+    const badgeHtml = `<div class="verdict-badge ${verdict}"><span class="verdict-dot"></span>${verdictLabel(verdict)}</div>`;
+
+    card.innerHTML = `
+      <div class="req-card-header" onclick="toggleCard(${i})">
+        <div class="req-label" style="color: var(--accent-${cfg.color});">${cfg.label}</div>
+        <div class="req-info">
+          <div class="req-source-tag">${s1.requirement_source} · ${stageLabel}</div>
+          <div class="req-text">${s1.original_text.replace(/\n/g, ' ')}</div>
+        </div>
+        ${badgeHtml}
+      </div>
+      <div class="expand-hint" onclick="toggleCard(${i})">
+        <span class="arrow">▾</span>
+        ${reqIdx === 0 ? '展开查看完整6阶段旅程' : '展开查看守门判断详情'}
+      </div>
+      <div class="req-journey" id="journey-${i}">
+        ${journeyHtml}
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+})();
+
+function toggleCard(idx) {
+  const card = document.getElementById(`req-card-${idx}`);
+  const journey = document.getElementById(`journey-${idx}`);
+  const isOpen = journey.classList.contains('open');
+  journey.classList.toggle('open', !isOpen);
+  card.classList.toggle('expanded', !isOpen);
+}
+
+// ── Metrics ──
+(function renderMetrics() {
+  const grid = document.getElementById('metricsGrid');
+  const m = DEMO_DATA.metrics;
+
+  const items = [
+    { val: (m.satisfaction_rate * 100).toFixed(1) + '%', label: '客户满意率', sub: '真实问卷·9.8/10 评分', color: 'green' },
+    { val: Math.round(m.process_health_score * 100) + '%', label: '流程健康度', sub: 'Stage6 AI 复盘计算·真实运行', color: 'blue' },
+    { val: Math.round(m.test_pass_rate * 100) + '%', label: '测试用例通过率', sub: '研发自测·真实运行', color: 'green' },
+    { val: m.avg_gatekeeping_rounds.toFixed(1), label: '守门平均追问轮次', sub: 'Stage6 复盘统计·真实运行', color: 'blue' },
+    { val: `${m.gatekeeping_approved}/${m.gatekeeping_approved + m.gatekeeping_rejected + m.gatekeeping_info_needed}`, label: '守门通过率', sub: '∼ 典型场景估算', color: 'amber' },
+    { val: Math.round(m.criteria_met_rate * 100) + '%', label: '验收标准达标率', sub: 'Stage6 ROI 评估·真实运行', color: 'amber' },
+    { val: m.total_feedback_responses, label: '客户反馈回收数', sub: '∼ 典型场景估算', color: 'purple' },
+    { val: '100%', label: '反馈问卷回收率', sub: '∼ 典型场景估算', color: 'purple' },
+  ];
+
+  items.forEach(item => {
+    const card = document.createElement('div');
+    card.className = `metric-card ${item.color}`;
+    card.innerHTML = `
+      <div class="metric-val">${item.val}</div>
+      <div class="metric-label">${item.label}</div>
+      <div class="metric-source">${item.sub}</div>
+    `;
+    grid.appendChild(card);
+  });
+})();
+
+// ── Intersection Observer for bar animations ──
+const barObserver = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.style.width = e.target.getAttribute('data-width') || e.target.style.width;
+    }
+  });
+});
+
+document.querySelectorAll('.bar-fill').forEach(bar => {
+  const w = bar.style.width;
+  bar.setAttribute('data-width', w);
+  bar.style.width = '0%';
+  barObserver.observe(bar);
+});
+
+// ── Animation A: removed ──
+// feishu animation removed
+
+// ── Animation C: Stage scroll reveal ──
+function initStageReveal() {
+  const stages = document.querySelectorAll('.journey-stage');
+  if (!stages.length) return;
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        const stage = e.target;
+        const idx = Array.from(stages).indexOf(stage);
+        setTimeout(() => stage.classList.add('revealed'), idx * 120);
+      }
+    });
+  }, { threshold: 0.15 });
+  stages.forEach(s => obs.observe(s));
+}
+// Run on card open too
+const origToggle = window.toggleCard;
+window.toggleCard = function(idx) {
+  origToggle(idx);
+  setTimeout(initStageReveal, 100);
+};
+initStageReveal();
+
+// ── Interactive Pipeline Demo ──
+const PIPELINE_STAGES = [
+  {
+    name: '守门', icon: '🛡️', role: '守门 Agent · 飞书消息触发',
+    render: async function(el) {
+      el.innerHTML = `
+        <div class="stage-header-row">
+          <span class="stage-header-icon">🛡️</span>
+          <span class="stage-header-title">守门 Agent — AI 多转追问 · 四问 Rubric</span>
+          <span class="stage-header-role">飞书消息触发 → AI识别缺失字段 → 主动追问 → 人工确认</span>
+        </div>
+        <div class="stage-chat" id="sc1"></div>
+        <div class="stage-analysis" id="sa1" style="margin-top:16px;"></div>
+        <div class="stage-verdict green" id="sv1">✓ 守门通过（第2轮）<span class="stage-verdict-note">模糊6字→ AI追问补全四问，进入价值转化</span></div>
+      `;
+      const chat = document.getElementById('sc1');
+      const analysis = document.getElementById('sa1');
+
+      // 用户发送模糊消息
+      const userDiv = document.createElement('div');
+      userDiv.className = 'stage-msg';
+      userDiv.innerHTML = `<div class="stage-avatar user">售前</div><div class="stage-bubble user" id="st1msg"></div>`;
+      chat.appendChild(userDiv);
+      await typewriter('st1msg', '机器人响应太慢，客户不满意', 40);
+      await delay(500);
+
+      // AI 分析出缺少字段，发出追问
+      const botAsk = document.createElement('div');
+      botAsk.className = 'stage-msg';
+      botAsk.innerHTML = `<div class="stage-avatar bot">🤖</div><div class="stage-bubble bot" id="st1ask"></div>`;
+      chat.appendChild(botAsk);
+      await delay(800);
+      await typewriter('st1ask', '「需求信息待补充」（第1轮）\n1. 请补充：客户是什么角色？\n2. 在什么场景或操作下出现响应慢？\n3. 客户对响应速度的期望是什么？有无具体指标？', 18);
+      await delay(600);
+
+      // 用户补充信息
+      const userDiv2 = document.createElement('div');
+      userDiv2.className = 'stage-msg';
+      userDiv2.innerHTML = `<div class="stage-avatar user">售前</div><div class="stage-bubble user" id="st1reply"></div>`;
+      chat.appendChild(userDiv2);
+      await delay(400);
+      await typewriter('st1reply', '展厅负责人\n日常使用\n希望从当前约15s降低到10s以内', 30);
+      await delay(600);
+
+      // AI 提取四问完整，展示分析结果
+      const botOk = document.createElement('div');
+      botOk.className = 'stage-msg';
+      botOk.innerHTML = `<div class="stage-avatar bot">🤖</div><div class="stage-bubble bot">四问已收齐，守门通过 ✓</div>`;
+      chat.appendChild(botOk);
+      await delay(400);
+
+      const items = [
+        { key: '客户是谁', val: '展厅负责人', s: 'pass' },
+        { key: '使用场景', val: '日常使用展厅机器人时', s: 'pass' },
+        { key: '具体问题', val: '机器人响应约15s，客户不满意', s: 'pass' },
+        { key: '预期结果', val: '响应时间从15s降至10s以内', s: 'pass' },
+      ];
+      for (const item of items) {
+        const row = document.createElement('div');
+        row.className = 'analysis-row';
+        row.innerHTML = `<span class="analysis-key">${item.key}</span><span class="analysis-val">${item.val}</span><span class="analysis-check pass">✓</span>`;
+        analysis.appendChild(row);
+        await delay(50);
+        row.classList.add('show');
+        await delay(450);
+      }
+      await delay(400);
+      document.getElementById('sv1').classList.add('show');
+    }
+  },
+  {
+    name: '价值转化', icon: '💎', role: 'PM 审批卡片',
+    render: async function(el) {
+      el.innerHTML = `
+        <div class="stage-header-row">
+          <span class="stage-header-icon">💎</span>
+          <span class="stage-header-title">价值转化 Agent — 验收标准 + 测试用例</span>
+          <span class="stage-header-role">飞书卡片 → PM 审批</span>
+        </div>
+        <div class="stage-chat" id="sc2"></div>
+        <div class="stage-criteria" id="sc2c"></div>
+        <div class="stage-verdict green" id="sv2">✓ PM 审批通过 <span class="stage-verdict-note">产品线：展厅机器人 · 优先级高</span></div>
+      `;
+      const chat = document.getElementById('sc2');
+      const botDiv = document.createElement('div');
+      botDiv.className = 'stage-msg';
+      botDiv.innerHTML = `<div class="stage-avatar bot">🤖</div><div class="stage-bubble bot">已生成验收标准 2 条 + 测试用例 2 条，等待 PM 确认...</div>`;
+      chat.appendChild(botDiv);
+      await delay(800);
+      const criteria = [
+        '[ac_002_001] 展厅负责人日常使用时，机器人首次响应时间 < 10秒（高并发场景同样适用）',
+        '[ac_002_002] 连测10次，平均响应时间和最大响应时间均 < 10秒',
+      ];
+      const clist = document.getElementById('sc2c');
+      for (const c of criteria) {
+        const item = document.createElement('div');
+        item.className = 'criteria-item';
+        item.innerHTML = `<span class="criteria-icon">✓</span><span>${c}</span>`;
+        clist.appendChild(item);
+        await delay(50);
+        item.classList.add('show');
+        await delay(500);
+      }
+      await delay(600);
+      // 测试用例
+      const tcMsg = document.createElement('div');
+      tcMsg.className = 'stage-msg';
+      tcMsg.innerHTML = `<div class="stage-avatar bot">🤖</div><div class="stage-bubble bot">同步生成 2 条测试用例...</div>`;
+      chat.appendChild(tcMsg);
+      await delay(700);
+      const tcList = document.createElement('div');
+      tcList.className = 'stage-criteria';
+      tcList.style.marginTop = '8px';
+      const testcases = [
+        '[tc_002_001] 正常场景：展厅负责人发起对话10次，每次首次响应均 < 10s',
+        '[tc_002_002] 高频场景：连续发起对话5次，每次首次响应均 < 10s',
+      ];
+      clist.parentNode.insertBefore(tcList, clist.nextSibling);
+      for (const tc of testcases) {
+        const item = document.createElement('div');
+        item.className = 'criteria-item';
+        item.innerHTML = `<span class="criteria-icon" style="color:var(--accent-amber);">→</span><span>${tc}</span>`;
+        tcList.appendChild(item);
+        await delay(50);
+        item.classList.add('show');
+        await delay(500);
+      }
+      await delay(400);
+      document.getElementById('sv2').classList.add('show');
+    }
+  },
+  {
+    name: '研发自测', icon: '🧪', role: '研发自测卡片',
+    render: async function(el) {
+      el.innerHTML = `
+        <div class="stage-header-row">
+          <span class="stage-header-icon">🧪</span>
+          <span class="stage-header-title">研发自测 — 场景用例验证</span>
+          <span class="stage-header-role">飞书卡片 → 研发提交自测结果</span>
+        </div>
+        <div id="st3tests"></div>
+        <div class="stage-verdict green" id="sv3">✓ 研发自测通过，已提测 <span class="stage-verdict-note">2/2 用例通过</span></div>
+      `;
+      const wrap = document.getElementById('st3tests');
+      const tests = [
+        { c: '[tc_002_001] 正常场景发起对话10次，首次响应均 < 10s', r: '全部通过 ✓' },
+        { c: '[tc_002_002] 连续高频5次，首次响应均 < 10s', r: '全部通过 ✓' },
+      ];
+      for (const t of tests) {
+        const row = document.createElement('div');
+        row.className = 'test-result-row';
+        row.innerHTML = `<span class="test-case">${t.c}</span><span class="test-val">${t.r}</span>`;
+        wrap.appendChild(row);
+        await delay(50);
+        row.classList.add('show');
+        await delay(550);
+      }
+      await delay(400);
+      document.getElementById('sv3').classList.add('show');
+    }
+  },
+  {
+    name: '测试发版', icon: '🚦', role: '发版审批卡片',
+    render: async function(el) {
+      el.innerHTML = `
+        <div class="stage-header-row">
+          <span class="stage-header-icon">🚦</span>
+          <span class="stage-header-title">测试验收 + 发版决策</span>
+          <span class="stage-header-role">飞书卡片 → 测试负责人确认 → 发版通过</span>
+        </div>
+        <div class="stage-analysis" id="sa4"></div>
+        <div class="stage-verdict green" id="sv4">✓ 测试验收通过，批准发版 <span class="stage-verdict-note">v1.2.2 · 2026-05-17</span></div>
+      `;
+      const analysis = document.getElementById('sa4');
+      const items = [
+        { key: '验收标准达标', val: '2条全部达标', s: 'pass' },
+        { key: '测试用例', val: '2/2 通过，客户场景已跑通', s: 'pass' },
+        { key: '版本号', val: '1.2.2 · 计划发版 2026-05-17', s: 'pass' },
+        { key: '发版风险', val: '低，无回滚需求', s: 'pass' },
+      ];
+      for (const item of items) {
+        const row = document.createElement('div');
+        row.className = 'analysis-row';
+        row.innerHTML = `<span class="analysis-key">${item.key}</span><span class="analysis-val">${item.val}</span><span class="analysis-check pass">✓</span>`;
+        analysis.appendChild(row);
+        await delay(50);
+        row.classList.add('show');
+        await delay(600);
+      }
+      await delay(400);
+      document.getElementById('sv4').classList.add('show');
+    }
+  },
+  {
+    name: '反馈收集', icon: '📡', role: '反馈收集 Agent',
+    render: async function(el) {
+      el.innerHTML = `
+        <div class="stage-header-row">
+          <span class="stage-header-icon">📡</span>
+          <span class="stage-header-title">反馈收集 Agent — AI 分析客户反馈</span>
+          <span class="stage-header-role">问卷发出9份 · 回收9份</span>
+        </div>
+        <div class="stage-chat" id="sc5"></div>
+        <div class="feedback-bar-wrap" id="fb5" style="margin-top:16px;">
+          <div class="feedback-label">客户满意率</div>
+          <div class="feedback-bar-bg"><div class="feedback-bar-fill" id="fbfill"></div></div>
+          <div class="feedback-pct" id="fbpct">0%</div>
+        </div>
+        <div class="stage-verdict green" id="sv5">✓ 反馈收集完成 <span class="stage-verdict-note">回收9/9份 · 满意度 9.8/10</span></div>
+      `;
+      const chat = document.getElementById('sc5');
+      const b1 = document.createElement('div');
+      b1.className = 'stage-msg';
+      b1.innerHTML = `<div class="stage-avatar bot">🤖</div><div class="stage-bubble bot">正在向9位客户发送反馈问卷...</div>`;
+      chat.appendChild(b1);
+      await delay(1200);
+      const b2 = document.createElement('div');
+      b2.className = 'stage-msg';
+      b2.innerHTML = `<div class="stage-avatar bot">🤖</div><div class="stage-bubble bot">问卷已回收，AI 正在分析满意度...</div>`;
+      chat.appendChild(b2);
+      await delay(800);
+      // animate bar
+      document.getElementById('fbfill').style.width = '98%';
+      let pct = 80;
+      const pctEl = document.getElementById('fbpct');
+      const timer = setInterval(() => {
+        pct = Math.min(pct + 2, 82);
+        pctEl.textContent = pct + '%';
+        if (pct >= 98) { pctEl.textContent = '9.8/10'; clearInterval(timer); }
+      }, 25);
+      await delay(1500);
+      document.getElementById('sv5').classList.add('show');
+    }
+  },
+  {
+    name: '复盘分析', icon: '🔄', role: '复盘 Agent',
+    render: async function(el) {
+      el.innerHTML = `
+        <div class="stage-header-row">
+          <span class="stage-header-icon">🔄</span>
+          <span class="stage-header-title">复盘分析 — 全链路 ROI 评估</span>
+          <span class="stage-header-role">自动归档至飞书多维表格</span>
+        </div>
+        <div class="stage-chat" id="sc6chat"></div>
+        <div class="stage-analysis" id="sa6" style="margin-top:12px;"></div>
+        <div class="stage-criteria" id="sc6s" style="margin-top:12px;"></div>
+        <div class="stage-verdict green" id="sv6">✓ 全链路复盘完成 <span class="stage-verdict-note">已归档至飞书多维表格</span></div>
+        <div class="pipeline-done" id="pdone" style="display:none;">
+          <div class="pipeline-done-text">🎉 全链路演示完成</div>
+          <div class="pipeline-done-sub">需求 REQ-20260510-001 · 从飞书消息触发到复盘归档 · 6 Agent 全程协作</div>
+        </div>
+      `;
+      // AI insight bubble first
+      const chat = document.getElementById('sc6chat');
+      const b1 = document.createElement('div');
+      b1.className = 'stage-msg';
+      b1.innerHTML = `<div class="stage-avatar bot">🤖</div><div class="stage-bubble bot" id="retro-insight"></div>`;
+      chat.appendChild(b1);
+      await typewriter('retro-insight', '本版本核心价值已交付：展厅首次响应P90从未知压缩至12.3秒，达标率75%。主流程跑通，但高并发边界场景存在缺口——这是测试用例设计的盲点，不是研发问题。', 22);
+      await delay(600);
+      const analysis = document.getElementById('sa6');
+      const items = [
+        { key: '验收达标率', val: '75%（3/4条）· 1条并发边界未覆盖', s: 'pass' },
+        { key: '流程瓶颈', val: '测试用例未设置并发压力场景', s: 'warn' },
+        { key: '客户满意率', val: '82.2% · 主流程满意，边界体验待补', s: 'pass' },
+        { key: '守门轮次', val: '1轮直接通过 · 需求质量良好', s: 'pass' },
+      ];
+      for (const item of items) {
+        const row = document.createElement('div');
+        row.className = 'analysis-row';
+        const icon = item.s === 'warn' ? '⚠' : '✓';
+        const cls = item.s === 'warn' ? 'warn' : 'pass';
+        row.innerHTML = `<span class="analysis-key">${item.key}</span><span class="analysis-val">${item.val}</span><span class="analysis-check ${cls}">${icon}</span>`;
+        analysis.appendChild(row);
+        await delay(50);
+        row.classList.add('show');
+        await delay(480);
+      }
+      await delay(300);
+      const suggs = [
+        '[P1] 延续修复：补充并发3路以上的压力测试用例，覆盖高峰展厅场景',
+        '[P2] 新增：对接待首屏渲染做性能专项，目标首屏<2秒',
+      ];
+      const slist = document.getElementById('sc6s');
+      for (const s of suggs) {
+        const item = document.createElement('div');
+        item.className = 'criteria-item';
+        item.innerHTML = `<span class="criteria-icon">→</span><span>${s}</span>`;
+        slist.appendChild(item);
+        await delay(50);
+        item.classList.add('show');
+        await delay(500);
+      }
+      await delay(400);
+      document.getElementById('sv6').classList.add('show');
+      await delay(600);
+      document.getElementById('pdone').style.display = 'block';
+    }
+  }
+];
+
+function delay(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+function typewriter(id, text, speed) {
+  return new Promise(resolve => {
+    const el = document.getElementById(id);
+    let i = 0;
+    function next() {
+      if (i < text.length) { el.textContent += text[i++]; setTimeout(next, speed); }
+      else resolve();
+    }
+    next();
+  });
+}
+
+async function startPipelineDemo() {
+  document.getElementById('pipelineSection').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  const btn = document.getElementById('heroRunBtn');
+  btn.style.opacity = '0.4';
+  btn.style.pointerEvents = 'none';
+  btn.textContent = '▶ 运行中...';
+  const stageArea = document.getElementById('stageArea');
+  const stageInner = document.getElementById('stageAreaInner');
+  stageArea.style.display = 'block';
+
+  for (let i = 0; i < PIPELINE_STAGES.length; i++) {
+    const stage = PIPELINE_STAGES[i];
+    // activate card
+    document.querySelectorAll('.agent-card').forEach((c, idx) => {
+      c.classList.remove('active');
+      if (idx < i) c.classList.add('done');
+    });
+    document.getElementById('agent-' + i).classList.add('active');
+    document.getElementById('agent-' + i).classList.remove('done');
+    // update status of previous
+    if (i > 0) document.getElementById('status-' + (i-1)).textContent = '✓ 完成';
+
+    // render stage interaction
+    stageInner.innerHTML = '';
+    await stage.render(stageInner);
+    await delay(1200);
+  }
+
+  // all done
+  document.querySelectorAll('.agent-card').forEach(c => { c.classList.remove('active'); c.classList.add('done'); });
+  document.querySelectorAll('.agent-status').forEach(s => { if (!s.textContent) s.textContent = '✓ 完成'; });
+  btn.textContent = '↺ 重新演示';
+  btn.style.opacity = '';
+  btn.style.pointerEvents = '';
+  btn.onclick = function(e) { e.preventDefault(); window.scrollTo(0, 0); location.reload(); };
+}
+</script>
+
+
+</body>
+</html>

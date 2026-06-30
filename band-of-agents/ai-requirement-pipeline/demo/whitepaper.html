@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<!-- v3 -->
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>需求是怎么烂掉的 — AI需求管理白皮书 · Jacky Ships</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-base: #f6f8fa;
+    --bg-card: #ffffff;
+    --bg-elevated: #eaeef2;
+    --border: #d0d7de;
+    --border-light: #eaeef2;
+    --text-primary: #1f2328;
+    --text-secondary: #57606a;
+    --text-muted: #8c959f;
+    --accent-blue: #0969da;
+    --accent-blue-dim: #ddf4ff;
+    --accent-green: #1a7f37;
+    --accent-amber: #9a6700;
+    --accent-purple: #8250df;
+    --font-main: 'Inter', system-ui, -apple-system, sans-serif;
+    --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+    --radius-sm: 6px;
+    --radius-md: 10px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: var(--font-main);
+    background: var(--bg-base);
+    color: var(--text-primary);
+    line-height: 1.8;
+    font-size: 16px;
+    overflow-x: hidden;
+  }
+
+  /* ─── Sticky Nav ─── */
+  .site-nav {
+    position: sticky;
+    top: 0;
+    z-index: 200;
+    background: rgba(246,248,250,0.95);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-inner {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 24px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .nav-brand {
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--text-primary);
+  }
+
+  .nav-right {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+  }
+
+  /* ─── Back Link ─── */
+  .back-bar {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 28px 24px 0;
+  }
+
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.84rem;
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .back-link:hover {
+    color: var(--accent-blue);
+  }
+
+  /* ─── Article Layout ─── */
+  .article-wrap {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+
+  /* ─── Document Header ─── */
+  .doc-header {
+    margin-bottom: 48px;
+    padding-bottom: 32px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .doc-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(9,105,218,0.08);
+    border: 1px solid rgba(88,166,255,0.25);
+    border-radius: 100px;
+    padding: 5px 14px;
+    font-size: 12px;
+    color: var(--accent-blue);
+    font-weight: 500;
+    margin-bottom: 20px;
+    letter-spacing: 0.04em;
+    font-family: var(--font-mono);
+  }
+
+  .doc-title {
+    font-size: clamp(1.8rem, 4vw, 2.6rem);
+    font-weight: 800;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    margin-bottom: 16px;
+    background: linear-gradient(135deg, #1f2328 0%, #0969da 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .doc-meta {
+    font-size: 0.82rem;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+    line-height: 1.8;
+  }
+
+  .doc-meta span {
+    color: var(--text-secondary);
+  }
+
+  /* ─── Typography ─── */
+  .article-wrap h2 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--text-primary);
+    margin: 56px 0 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+    line-height: 1.3;
+  }
+
+  .article-wrap h2:first-of-type {
+    margin-top: 0;
+  }
+
+  .article-wrap h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 36px 0 14px;
+    letter-spacing: -0.01em;
+  }
+
+  .article-wrap p {
+    color: var(--text-secondary);
+    margin-bottom: 18px;
+    line-height: 1.85;
+  }
+
+  .article-wrap p:last-child {
+    margin-bottom: 0;
+  }
+
+  .article-wrap strong {
+    color: var(--text-primary);
+    font-weight: 600;
+  }
+
+  /* ─── Blockquote ─── */
+  .article-wrap blockquote {
+    margin: 24px 0;
+    padding: 16px 20px;
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent-blue);
+    border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+    font-size: 0.92rem;
+    color: var(--text-secondary);
+    line-height: 1.8;
+    font-style: italic;
+  }
+
+  .article-wrap blockquote p {
+    margin-bottom: 6px;
+    color: var(--text-secondary);
+  }
+
+  .article-wrap blockquote p:last-child {
+    margin-bottom: 0;
+  }
+
+  /* ─── HR ─── */
+  .article-wrap hr {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 40px 0;
+  }
+
+  /* ─── Pending Chapter Placeholder ─── */
+  .chapter-pending {
+    margin: 56px 0 0;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .chapter-pending-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+  }
+
+  .chapter-pending-body {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 18px;
+    background: var(--bg-card);
+    border: 1px solid var(--border-light);
+    border-radius: var(--radius-md);
+    font-size: 0.84rem;
+    color: var(--text-muted);
+    font-family: var(--font-mono);
+  }
+
+  .pending-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--text-muted);
+    flex-shrink: 0;
+    opacity: 0.5;
+  }
+
+  /* ─── TOC ─── */
+  .toc-box {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md);
+    padding: 20px 24px;
+    margin-bottom: 48px;
+  }
+
+  .toc-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--accent-blue);
+    margin-bottom: 12px;
+  }
+
+  .toc-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .toc-list li {
+    font-size: 0.88rem;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+  }
+
+  .toc-list li a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .toc-list li a:hover {
+    color: var(--accent-blue);
+  }
+
+  .toc-num {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    flex-shrink: 0;
+    min-width: 32px;
+  }
+
+  .toc-list li.pending a {
+    color: var(--text-muted);
+    cursor: default;
+  }
+
+  .toc-pending-tag {
+    font-size: 0.72rem;
+    font-family: var(--font-mono);
+    color: var(--text-muted);
+    background: var(--bg-elevated);
+    border: 1px solid var(--border-light);
+    border-radius: 4px;
+    padding: 1px 6px;
+    margin-left: 6px;
+  }
+
+  /* ─── Table ─── */
+  .article-wrap table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 24px 0;
+    font-size: 0.9rem;
+    background: var(--bg-card);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+
+  .article-wrap table thead th {
+    background: var(--bg-elevated);
+    color: var(--text-primary);
+    font-weight: 600;
+    padding: 12px 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+    font-size: 0.85rem;
+    letter-spacing: 0.02em;
+  }
+
+  .article-wrap table tbody td {
+    padding: 11px 16px;
+    color: var(--text-secondary);
+    border-bottom: 1px solid var(--border-light);
+    vertical-align: top;
+    line-height: 1.6;
+  }
+
+  .article-wrap table tbody tr:last-child td {
+    border-bottom: none;
+  }
+
+  .article-wrap table tbody tr:hover td {
+    background: var(--bg-elevated);
+  }
+
+  .article-wrap table tbody td:first-child {
+    color: var(--text-primary);
+    font-weight: 500;
+    white-space: nowrap;
+  }
+
+  /* ─── Footer ─── */
+  .article-footer {
+    border-top: 1px solid var(--border);
+    padding: 28px 0 0;
+    margin-top: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .article-footer-copy {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+  }
+
+  .article-footer-link {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .article-footer-link:hover {
+    color: var(--accent-blue);
+  }
+
+  /* ─── Responsive ─── */
+  @media (max-width: 768px) {
+    .article-wrap {
+      padding: 28px 16px 60px;
+    }
+
+    .back-bar {
+      padding: 20px 16px 0;
+    }
+
+    .doc-title {
+      font-size: 1.6rem;
+    }
+
+    .article-wrap h2 {
+      font-size: 1.25rem;
+      margin-top: 44px;
+    }
+
+    .article-footer {
+      flex-direction: column;
+      gap: 8px;
+    }
+  }
+</style>
+</head>
+<body>
+
+
+<div class="back-bar">
+  <a class="back-link" href="index.html">← 返回 Demo</a>
+</div>
+
+<div class="article-wrap">
+
+  <!-- Document Header -->
+  <header class="doc-header">
+    <h1 class="doc-title">需求是怎么烂掉的 — AI需求管理白皮书</h1>
+    <p style="margin-top:14px;font-size:0.85rem;color:var(--text-muted);font-family:var(--font-mono);">本文描述的系统在2026年5月傅盛AI战队黑客松中以96/100的分数获得综合第一。</p>
+  </header>
+
+  <!-- Table of Contents -->
+  <nav class="toc-box" aria-label="目录">
+    <div class="toc-label">目录</div>
+    <ul class="toc-list">
+      <li>
+        <span class="toc-num">开篇</span>
+        <a href="#preface">你们公司的需求，是怎么烂掉的？</a>
+      </li>
+      <li>
+        <span class="toc-num">第一章</span>
+        <a href="#ch1">我在那个产研环境里看到了什么</a>
+      </li>
+      <li>
+        <span class="toc-num">第二章</span>
+        <a href="#ch2">我是怎么判断的</a>
+      </li>
+      <li>
+        <span class="toc-num">第三章</span>
+        <a href="#ch3">这套系统实际长什么样</a>
+      </li>
+      <li>
+        <span class="toc-num">第四章</span>
+        <a href="#ch4">Before vs After，哪里不一样</a>
+      </li>
+      <li style="display:none">
+        <span class="toc-num">第五章</span>
+        <a href="#ch5">你们公司能用吗</a>
+      </li>
+      <li style="display:none">
+        <span class="toc-num">后记</span>
+        <a href="#afterword">为什么我要把这个写出来</a>
+      </li>
+    </ul>
+  </nav>
+
+  <!-- ═══ 开篇 ═══ -->
+  <h2 id="preface">开篇：你们公司的需求，是怎么烂掉的？</h2>
+
+  <p>大多数产研团队的需求管理，看起来是这样的：</p>
+
+  <blockquote>
+    <p>售前群里发：「王总，那个客户要一个能自动配置接待话术的功能，很急」</p>
+    <p>产品回：「好的，记一下」</p>
+    <p>研发三个月后：「这个需求当时谁提的？客户是谁？验收标准是啥？」</p>
+    <p>售前：「我也记不清了」</p>
+  </blockquote>
+
+  <p>还有另一种情况，同样真实：</p>
+
+  <blockquote>
+    <p>测试快收尾了，按流程这时候应该可以发版了。</p>
+    <p>产品突然说：「这个做的不对。另外我再加一个需求。」</p>
+  </blockquote>
+
+  <p>测试本来是收口的那道门。但这道门从来没有真正关上过。</p>
+
+  <p>还有第三种情况：</p>
+
+  <blockquote>
+    <p>产品整理了十几条需求，文档写得很完整，进了评审会。</p>
+    <p>售前说：「这些我们客户没有提过。」</p>
+    <p>大客户代表说：「对，这些都是你们自己想的。」</p>
+    <p>产品：「……」</p>
+  </blockquote>
+
+  <p>需求跑完了整个内部立项流程，最后在评审会上被客户代表一句话否掉。浪费掉的，是所有人为它花的时间。</p>
+
+  <hr>
+
+  <p>问题不在于哪个人不负责任。每个人都在做自己那部分。但边界没有人划清楚，判断没有人拍板记录，信息每传一层就丢一块。等到有人开口问，已经没有人记得清楚了。</p>
+
+  <p>我在真实的产研环境里看到这些问题之后，花了几天时间，试着用 AI 解决这件事。</p>
+
+  <p>在动手之前，我翻了一遍当时团队的需求台账，看了看字段填写情况。发现了一件让我意外的事：守门环节的核心字段，填写率极低。大量需求进来的时候，没有「客户是谁」，没有「为什么要做」，没有「做完了怎么算完成」。系统是有的，流程也走了，只是这三个问题，从来没有人回答过。</p>
+
+  <p><strong>这不是需求管理系统，这是一个状态看板。这两件事不是一回事。</strong></p>
+
+  <p>而这本白皮书，就是「一个 AI 工程师从看到问题到系统真实跑通」的完整路径。不仅是理论，不仅是框架，而是一套可以复用的系统。</p>
+
+  <hr>
+
+  <!-- ═══ 第一章 ═══ -->
+  <h2 id="ch1">第一章：我在那个产研环境里看到了什么</h2>
+
+  <p><strong>章首结论：问题不是人不负责，是系统根本没设计好。</strong></p>
+
+  <h3>第一节：我观察到的现象</h3>
+
+  <p>产研团队里最难受的一种局面，不是有人摆烂，而是每个人都在认真做自己那部分，但事情还是会出问题。</p>
+
+  <p>销售在收集需求，产品在写方案，研发在开发，测试在测试——每个人都完成了自己的环节。但当你把一条需求的全程拉出来看，你会发现这些环节从来没有被真正连接起来。</p>
+
+  <p>最典型的症状有两种。</p>
+
+  <p><strong>第一种，信息在传递中消失。</strong> 一个需求从售前进来，到了研发手里，客户是谁、为什么要做、做完了怎么算完成——这些问题的答案通常都不见了。不是有人故意隐瞒，是因为系统从来没有要求过这些信息必须留下来。</p>
+
+  <p><strong>第二种，边界从来没有被设计过。</strong> 流程里有测试环节，但「测试」这个词在实际执行中是模糊的——它有时候是质量门，有时候是讨论会，有时候是产品临时重新审视需求的机会。产品在提测前突然说「这个做的不对」，然后再加一个需求；测试发出去的版本带着 bug，因为修不完，版本迭代太快。这些情况发生时，没有人有明确的依据说这不对——因为谁在哪个环节有什么权力，从来没有被写清楚过。</p>
+
+  <p>复盘的时候很难说清楚问题出在哪。因为每个人做了什么、依据是什么、结论是什么，都没有记录。</p>
+
+  <p><strong>第三种，需求的来源根本不是客户。</strong> 产品整理了一批需求进评审，逻辑自洽，文档也写了，但评审会上售前和大客户代表把这些需求全部否掉——客户没有提过这些，是产品自己推断出来的。这批需求走完了内部立项流程，占了产品几周的时间，最后在评审会上一句话结束。浪费掉的不只是时间，是整个链路在一个从来不存在的需求上跑了一遍。</p>
+
+  <p>这类需求最隐蔽，因为它在系统里看起来和真实需求一模一样——有标题、有负责人、有版本号。台账里看不出来源是客户还是内部推断，因为台账从来没有要求这个信息必须存在。</p>
+
+  <p><strong>这不是执行问题，这是设计问题。</strong></p>
+
+  <h3>第二节：翻完台账之后，我看到了什么</h3>
+
+  <p>在判断做什么之前，我翻了一遍当时团队的需求台账，逐类看了字段填写情况。</p>
+
+  <p>我原本以为会看到填写不规范的问题。但实际看到的，比这更系统性——不是填错了，是整体设计没有原则。</p>
+
+  <p><strong>第一件事：「客户是谁」这个问题，台账里几乎没有答案。</strong></p>
+
+  <p>台账里有「服务主体」这个字段，设计得很细，有终端用户、一线运营、技术集成方等选项。但实际填写率极低，近乎废弃。与此同时，「需求来源」这个字段的填写内容，几乎清一色是公司内部人员。这意味着：大量需求的来源不是客户，是内部人员认为该做的。台账本身就在记录这件事，只是没有人把它当作信号读出来过。</p>
+
+  <p><strong>第二件事：「为什么做」这个问题，台账里也没有答案。</strong></p>
+
+  <p>台账里有「痛点描述」字段，但填写率极低。有人写一句话，有人写的是解决方案而非痛点本身，更多的是空白。需求标题基本上都写了「做什么」，但「现在有多痛」「不做的代价是什么」，这些问题在台账层面从来没有被回答过。</p>
+
+  <p><strong>第三件事：字段设计本身有根本问题。</strong></p>
+
+  <p>有一个「优先级」字段，设计意图是给需求打优先级，但选项里混入了「解决方案还需完善」「需采集更多反馈再评估」这样的状态描述。优先级和流程状态是两件事，被放进了同一个选项列表。填写者不知道该选哪个，于是干脆不填。这不是执行懒惰，是字段设计让人没有办法填对。</p>
+
+  <p><strong>第四件事：进展信息不在台账里。</strong></p>
+
+  <p>台账里有进度详情字段，前期有人填，后来几乎完全弃用。执行过程中的讨论、决策、障碍，全部转移到了飞书群聊里。台账记的是起点和终点，中间发生了什么、卡在哪里、谁做了什么决定，时间一长全部消失。</p>
+
+  <p><strong>第五件事：时间成本完全不可追溯。</strong></p>
+
+  <p>排期估算是存在的——只是全在口头和日会上对齐，没有落进台账。哪类需求总是低估工作量、哪个阶段最容易卡住，这些问题永远无法被数据回答。</p>
+
+  <hr>
+
+  <p>看完这张台账，有一件事变得很清晰：</p>
+
+  <p>近 50 个字段里，被认真维护的不超过 6 个——需求标题、负责人、版本号、需求状态、PRD 链接。其余字段要么从来没活过，要么活了一段时间之后废掉了。</p>
+
+  <p>这张台账现在承担的功能，是「版本归属登记」，不是「需求管理」。</p>
+
+  <p>这两件事的填写动力根本不一样。版本号必须填——否则周会说不清楚。但背景信息、痛点描述、客户来源，可填可不填，不填也不影响任何人当下的工作。于是这些字段，全部烂掉了。</p>
+
+  <p><strong>一个系统里，填写动力决定填写质量。没有入口校验，没有强制字段，背景信息就永远不会被认真对待。这不是态度问题，是机制问题。</strong></p>
+
+  <!-- ═══ 第二章 ═══ -->
+  <h2 id="ch2">第二章：我是怎么判断的</h2>
+
+  <p><strong>章首结论：工具不难，判断难。</strong></p>
+
+  <p>这套系统搭起来之后，问我用了什么技术的人不少。答案其实很普通：飞书开放平台、多维表格、一个大语言模型的 API、几段 Python 代码。没有用任何复杂的框架，没有任何炫技的成分。</p>
+
+  <p>真正花时间的，是在动手之前做的四个判断。</p>
+
+  <hr>
+
+  <p><strong>第一个判断：这是线性流程，不是图。</strong></p>
+
+  <p>在做技术选型的时候，我在三个方向之间做决定：LangGraph、Crew AI 和 Pipeline。</p>
+
+  <p>LangGraph 适合的是各节点之间需要协商、下一步不确定去哪里的场景。CrewAI 的核心是多个 Agent 并行协作——一个研究员 Agent 搜集信息、一个分析师 Agent 同时做处理、一个撰写员 Agent 最后汇总，三条线可以并行跑。这两个框架都有它们适合的场景，只是都不是我需要的。</p>
+
+  <p>从会议纪要出发，把整个流程拉出来看：售前 → 产品 → 研发 → 测试 → 售后 → 复盘。每一步的输出是下一步的唯一输入，流程严格线性，有条件分叉和拒绝退出逻辑，还有人工审批断点卡着等待。这是一个带条件出口的线性 Pipeline，不是并行协作的多 Agent 网络。</p>
+
+  <p>用复杂框架会把一个清晰的流程搞复杂。Pipeline，定了。</p>
+
+  <hr>
+
+  <p><strong>第二个判断：每个节点必须人拍板。</strong></p>
+
+  <p>这个判断在设计之初就定了，没有动摇过。</p>
+
+  <p>原因不是 AI 不够聪明，而是要把人机协作的边界在设计阶段就划清楚——AI 能做什么、不能做什么，这条线必须写死，不能在运行中模糊。</p>
+
+  <p>举一个具体的例子：如果一个需求进来说「机器人响应时间 1 分钟以内」，AI 没有办法判断这是不是合理的需求。它不知道这个机器人现在的响应时间是多少，不知道行业里什么叫做快。这个判断必须由懂业务的人来做。</p>
+
+  <p>AI 能做的，是把模糊的想法结构化，确保信息明确传递下去。判断这个信息值不值得做，是人的职责。</p>
+
+  <hr>
+
+  <p><strong>第三个判断：守门守的是真需求，不是信息完整性。</strong></p>
+
+  <p>守门这个设计，有人理解成「要求填的字段足够详细」，但这不是我的出发点。</p>
+
+  <p>我的设计原则是：模糊不存。任何一个环节，如果这个需求回答不了「它背后有没有真实的客户群体」这个问题，它就不能往下传。</p>
+
+  <p>这不是苛刻，这是对整个团队负责。一个伪需求如果顺利通过了守门，进入产品审批、研发排期、测试验收，每个环节的人都为它花了时间。等到最后发现做出来客户不认可，整个链路的成本全部浪费。</p>
+
+  <p>守门守的不是信息完整性，守的是这条需求的真实性。这两件事不是一回事。</p>
+
+  <hr>
+
+  <p><strong>第四个判断：飞书卡片是操作入口，不是通知工具。</strong></p>
+
+  <p>这个判断的来源，说出来可能出乎意料——不是来自对飞书的深入研究，而是一次偶然的信息摄入。</p>
+
+  <p>我在用 Hermes Agent 的时候，它有时会在飞书里发一张卡片，问我「同意还是不同意」，等我点按钮之后再继续执行。我记住了这个交互形式。</p>
+
+  <p>后来设计这套系统的时候，我想到：每个审批人拿到卡片，里面包含完整的需求背景，然后只需要做一件事——通过或拒绝，写一句理由，点按钮。按钮点完变灰，不可撤销，自动记录。不需要进任何其他系统，不需要切换工具，不需要额外培训。</p>
+
+  <p>这不是功能炫耀，是降低执行摩擦的设计。</p>
+
+  <hr>
+
+  <p><strong>AI 在这套系统里真正做什么。</strong></p>
+
+  <p>从售前到售后，信息在每一层都会衰减。售前用客户的语言说需求，产品用自己的理解翻译一遍，研发拿到又是另一套逻辑。每多一次传递，模糊就多一分，损耗就多一分。到了最后，做出来的东西和客户最初说的那句话，可能已经相去甚远。</p>
+
+  <p>AI 在这套系统里做的事，是在每一次传递发生之前，帮当前这个角色把模糊的想法落地成结构化的字段——不是替他们判断，而是迫使他们把自己的想法说清楚，然后以不会失真的形式传递给下一级。</p>
+
+  <p><strong>这不是 AI 在帮人做决定。这是 AI 在帮人把决定说清楚。</strong></p>
+
+  <!-- ═══ 第三章 ═══ -->
+  <h2 id="ch3">第三章：这套系统实际长什么样</h2>
+
+  <p><strong>章首结论：传统链路里，每一层都在用自己的语言重新翻译需求。这套系统做的事，是把每一次翻译固定下来，让它可以被追溯、不会失真。</strong></p>
+
+  <hr>
+
+  <p>这条链路的角色顺序没有变：售前、产品、研发、测试、售后。变的是信息在这些角色之间流动的方式。</p>
+
+  <p>以前，一个需求从售前到产品，靠的是一句口头描述或者一条群消息。产品理解了，用自己的话写成 PRD，研发再读一遍，又是另一套逻辑。每传一层，原始信息就少一块。到研发手里的，往往已经是三手信息。</p>
+
+  <p>这套系统改的不是谁做什么，是信息以什么形式流动。</p>
+
+  <hr>
+
+  <h3>第一关：售前守门</h3>
+
+  <p>一条需求的起点，是售前发出的一句话。</p>
+
+  <p>这句话可能是「机器人太慢了，客户不满意」，也可能是「展厅那边说体验不好」。这种表述在以前会直接进需求台账，带着所有的模糊一起进去。现在不会。</p>
+
+  <p>售前发出消息之后，Bot 立即介入，发起追问。它问的不是「你觉得这个需求合不合理」，而是四件事：这是哪类客户遇到的问题？在什么场景下发生的？具体遇到了什么障碍？解决之后客户希望得到什么结果？</p>
+
+  <p>这四个问题是强制的，不是建议。缺哪个追哪个，最多三轮，三轮还补不全就拒绝。重要的一点是，Bot 还会追问来源——这个描述是客户说的，还是售前自己的推断？如果是「我感觉用户会喜欢这个功能」，它不会放行，因为来源不是客户，是内部判断。</p>
+
+  <p>四个字段全部补齐之后，Bot 生成一张确认卡片推给售前。售前看到的，是自己刚才说的那句话被拆解成四个清晰字段之后的样子——客户是谁、在什么场景、遇到什么问题、期望什么结果。确认没问题，点按钮，卡片变灰，信息锁定，自动写入多维表格，流向产品。</p>
+
+  <p>整个过程，只有售前能和 Bot 交互，其他角色不能介入。</p>
+
+  <hr>
+
+  <h3>第二关：产品的价值转化</h3>
+
+  <p>产品收到的卡片，是售前四问的完整展示。它的任务不是重新理解需求，而是完成一次翻译——把客户描述的问题，转化成产研团队能够执行的验收标准。</p>
+
+  <p>这个翻译分两步。</p>
+
+  <p>第一步，产品填写三件事：这个需求对客户的核心价值是什么、功能应该做到什么、验收标准是什么。为了降低填写门槛，前三个字段有 AI 根据售前四问预填的初稿，产品可以直接修改，也可以推翻重写。预填的目的不是替产品做判断，是帮产品把脑子里已经有的想法快速落到纸面上。</p>
+
+  <div style="border:1px dashed #30363d;border-radius:8px;padding:16px;margin:24px 0;color:#8b949e;font-size:0.9rem;text-align:center;">📸 截图占位：Stage2 产品审批卡片</div>
+
+  <p>验收标准填完之后，产品提交。AI 做第二步：把产品填的验收标准结构化，补充测量方法和数字门槛，同时生成客户场景测试用例。</p>
+
+  <p>这一步 AI 做的事，是把「机器人首次响应时间 &lt; 10 秒」这句话，变成「在真实导览场景中，展厅负责人触发对话后，使用计时工具连续记录不少于 5 次，每次均须 &lt; 10 秒，任意一次 ≥ 10 秒判定 Fail」。它不是在修改标准，是在把标准变成可执行的操作步骤。</p>
+
+  <p>产品拿到结构化之后的版本，做最终确认。一次性确认两件事：这个结构化之后的标准，有没有改变我的原意？这几条测试用例，研发拿到之后能不能执行？确认之后，信息写入多维表格，研发收到通知。</p>
+
+  <div style="border:1px dashed #30363d;border-radius:8px;padding:16px;margin:24px 0;color:#8b949e;font-size:0.9rem;text-align:center;">📸 截图占位：验收标准已确认卡片</div>
+
+  <p>这个设计有一个核心原则：AI 判断不了技术边界。如果产品把验收标准定成「机器人响应时间必须在 1 分钟以内」，AI 不知道这是不是合理的——它不知道现在是多少秒，不知道行业里什么叫快。只有懂业务的人能判断这件事。所以 AI 只做结构化，不做评判，评判权在产品手里。</p>
+
+  <hr>
+
+  <h3>第三关：研发拿到的不再是一句需求</h3>
+
+  <p>研发收到的卡片，和以前拿到的东西有一个根本区别：它不只是「做什么」，还有「为什么做」和「做到什么程度算完成」。</p>
+
+  <p>卡片里有三层信息。第一层是售前的四问原文——客户是谁、什么场景、遇到什么问题、期望什么结果。第二层是产品的判断——核心价值、功能定义、验收标准、预计影响用户数。第三层是 AI 生成的、产品已确认的测试用例——完整的前置条件、执行步骤、判断 Pass/Fail 的标准。</p>
+
+  <p>研发第一眼看到的不是一个需求描述，而是一条需求从客户嘴里出来之后，经过售前守门、产品转化、AI 结构化之后的完整记录。</p>
+
+  <div style="border:1px dashed #30363d;border-radius:8px;padding:16px;margin:24px 0;color:#8b949e;font-size:0.9rem;text-align:center;">📸 截图占位：Stage3 研发审批卡片</div>
+
+  <p>研发填写的内容同样是结构化的：技术方案、预计工作量、风险点、自测结论、自测备注。填完之后，卡片提交，自动写入多维表格，流向测试。</p>
+
+  <p>这个环节还有一个待完善的设计。目前研发是一张卡，但从确认方案到开发完成、自测跑通，中间可能隔好几天。更合理的做法是拆成两张——第一张确认技术方案和工作量，第二张在开发完成后填写自测结论。这样多维表格里的字段填写进度会更准确，也能帮研发自己管理开发节奏。这是当前版本还没有做到的地方。</p>
+
+  <hr>
+
+  <h3>最后两关：售后收集，AI 复盘</h3>
+
+  <p>发版之后，售后拿到系统生成的问卷模板。问卷不是通用的满意度问卷，是根据这条需求的验收标准生成的——每一条验收标准对应一道反馈题。售后可以修改措辞，也可以添加新问题，确认之后分发给客户。</p>
+
+  <p>客户反馈收集完，录入系统，进入最后一个环节：AI 复盘。</p>
+
+  <p>复盘做的事，在传统流程里没有人做过。不是因为没人想做，是因为没有人有完整的跨部门视角——知道这条需求怎么进来的、产品怎么转化的、研发花了多少时间、测试有没有跑通客户场景、客户最后满意不满意。这些信息分散在不同的人手里，没有人能在一个地方同时看到。</p>
+
+  <p>AI 汇总全链路数据，生成复盘报告，推送给所有经手人。报告里有 ROI 结论——验收标准达标率和客户满意度；有流程健康分——守门轮数、各环节耗时、有没有出现信息回退；有下版本建议——每条溯源到客户的原始反馈。</p>
+
+  <p>这是以前完全没有的东西，不是因为以前不想要，是因为以前没有人处于这个位置能做这件事。</p>
+
+  <hr>
+
+  <p><strong>多维表格是这套系统所有动作的沉淀。</strong></p>
+
+  <p>每一张卡片的提交，都会触发一次自动写入——字段、时间戳、负责人、结论，全部进表，不需要任何人手动维护。</p>
+
+  <p>打开表格，第一眼看到的是整齐的行和列：从 Stage 1 到 Stage 6，每个阶段有自己的字段，每条需求的字段随着流程推进逐步填满。不会再出现近五十个字段只有六个有内容的情况，因为写入是系统在做，不是依赖某个人有没有空去填。</p>
+
+  <p>这张表不再是版本归属登记，它是一条需求从第一句话到客户反馈的完整档案。</p>
+
+  <!-- ═══ 第四章 ═══ -->
+  <h2 id="ch4">第四章：Before vs After，哪里不一样</h2>
+
+  <p><strong>章首结论：最大的变化不在中间，在两端。</strong></p>
+
+  <p>跑完全链路之后，最让我意外的提升不是某个审批环节变快了，而是一头一尾——</p>
+
+  <p><strong>头</strong>：伪需求在进来的那一刻就被拦住了。情绪化发言、无法追溯到客户的表述，守门 Agent 直接拒绝，不让它往下传。以前这类需求会进来，产品去追，追半天发现背景模糊，最后变成产品自己理解出来的需求，研发做了，客户不认，整条链路的成本全部浪费。现在这件事不会发生了。</p>
+
+  <p><strong>尾</strong>：复盘视角第一次真正存在了。公司里没有任何一个人能有完整的跨部门视角——管理层在各部门之上，但没有时间仔细复盘每一个版本的每一个环节。AI 复盘 Agent 针对特定版本、特定经手人自动生成报告，字段公开透明，所有人可见。这是以前完全没有的东西。</p>
+
+  <hr>
+
+  <p><strong>对比表格：</strong></p>
+
+  <table>
+    <thead>
+      <tr>
+        <th>维度</th>
+        <th>Before</th>
+        <th>After</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>需求进来时</td>
+        <td>群里记一下，没有结构</td>
+        <td>四问守门，伪需求直接拦截</td>
+      </tr>
+      <tr>
+        <td>审批方式</td>
+        <td>拉群讨论，没有结论，没有记录</td>
+        <td>飞书卡片，点一下，自动留痕</td>
+      </tr>
+      <tr>
+        <td>信息传递</td>
+        <td>每传一层丢一块</td>
+        <td>每张卡片含完整背景，下游看得清楚</td>
+      </tr>
+      <tr>
+        <td>PM 的日常</td>
+        <td>四处收集信息，手动维护台账</td>
+        <td>不再需要——多维表格随协作自动写入</td>
+      </tr>
+      <tr>
+        <td>追进度</td>
+        <td>人工催，靠记忆</td>
+        <td>多维表格实时同步，全程可追溯</td>
+      </tr>
+      <tr>
+        <td>复盘</td>
+        <td>靠记忆，基本不发生</td>
+        <td>AI 自动汇总，跨部门视角，发给所有经手人</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <p>中间环节的变化同样不小：每个阶段有结构化的输入与输出，信息以固定格式在各角色之间流转，不再依赖口头对齐和群消息追记。PM 不需要四处收集进度、手动更新台账——协作发生，记录自动追加，信息传递的摩擦大幅减少。</p>
+
+  <hr>
+
+  <p><strong>说实话：</strong></p>
+
+  <p>这套系统能做到的，是让每个阶段有结构化的输入和输出，有规范的审批，所有字段公开透明。就算一个人扮演多个角色，全链路也是通的——这意味着 20 人左右的小团队同样适用。</p>
+
+  <p>它做不到的，是代替人进行业务判断。机器人响应 1 分钟算不算合理，这个问题 AI 回答不了，因为它不知道你的业务背景。判断权始终在人手里，这是设计的本意，不是缺陷。</p>
+
+  <p>还有一件事它做不到：<strong>代替没有决心的老板。</strong> 如果团队不愿意让信息链路公开透明，这套系统帮不上忙。它能做的，是在老板真正想推的时候，把推行成本降到最低。</p>
+
+  <!-- ═══ 第五章（hidden）═══ -->
+  <div style="display:none">
+  <h2 id="ch5">第五章：你们公司能用吗</h2>
+
+  <p><strong>章首结论：用飞书，有产研分工，想要信息透明化——就已经准备好了。</strong></p>
+
+  <hr>
+
+  <p><strong>先说规模。</strong></p>
+
+  <p>20 人以下的公司通常不急。这个规模信息传递的层级还没有厚到需要系统化管理，一两个人就能口头对齐。</p>
+
+  <p>20 到 50 人同样适用，尤其是一个人身兼多职的团队。这套系统的审批流程以角色为单位，不是以人头为单位——同一个人可以扮演售前、产品、研发多个角色，全链路照样跑通，多维表格照样自动写入。小团队跑单人全链路，反而是验证系统是否稳定的好方式。</p>
+
+  <p>500 人以上的公司可以推，但成本很高。这个规模的组织里，同一个部门内协作的人很多，工具也往往是 Jira 这类重系统，迁移成本极高。更现实的问题是：信息透明化会触及某些人的真实利益。很多人靠着信息不对称、流程模糊、协作摩擦在中间维持自己的位置——这套系统一上，这种空间就没了。推行阻力会很大。</p>
+
+  <p><strong>50 到 500 人是最合适的区间。</strong> 这个规模的公司，产研各部门通常在 10 人以内，用飞书协作的比例很高，尤其是科技公司和 AI 公司。每个人都在认真做事，但信息损耗和口头对齐的问题已经开始出现。这套系统介入的成本最低，收益最明显。</p>
+
+  <hr>
+
+  <p><strong>再说老板。</strong></p>
+
+  <p>工具能不能用起来，最终取决于一个人：老板有没有足够的决心。</p>
+
+  <p>这不是一个技术门槛的问题，是一个意愿问题。信息透明化对认真做事的人有利，但对靠信息不对称混日子的人不利。如果老板不愿意真正推动这件事，这套系统最后会变成另一张填了又烂掉的表。</p>
+
+  <p>适合的老板是这样的：真正想搞清楚需求在哪里卡住的，愿意让每个人的决策都留记录的，对 AI 工具持开放态度而不是本能抵触的。</p>
+
+  <hr>
+
+  <p><strong>关于技术门槛，说实话。</strong></p>
+
+  <p>这套系统的配置成本，比大多数人想象的低很多。飞书 Bot 创建是 UI 操作，多维表格随这个协作系统自动生成，AI 模型现在直连 API 即可，很多主流大模型都支持。只要有一台能上公网的机器，教程写得足够详细，初级开发者甚至有一定技术背景的运营都能完成配置。</p>
+
+  <p>但更现实的路径不是自己从零搭：<strong>先诊断，再落地。</strong> 在动手之前，先把产品和售前拉下来，看看现有的需求记录，摸清楚现在的问题在哪里。方案不是通用模板，是基于真实现状设计的。</p>
+
+  <hr>
+
+  <p><strong>最小可行路径：先上 Stage 1 + Stage 2。</strong></p>
+
+  <p>不要一次全上六个阶段。先只做守门和产品审批这两步——需求有人守，审批有记录。这两步跑通，已经解决了第一章说的五个问题里最核心的两个。</p>
+
+  <p>Stage 3 到 Stage 6 可以之后逐步补齐，每增加一个阶段都是独立的改动，不影响已经在跑的部分。</p>
+
+  <hr>
+
+  <div style="display:none">
+  <p><strong>如果你决定找我谈：</strong></p>
+
+  <p>我的习惯是先了解，再给方案。具体会做两件事。</p>
+
+  <p>第一件事是诊断。把你现在用的需求记录拉出来看——不需要整理，原始状态就行。看字段填写情况、看信息源头、看哪个环节最容易断掉。这一步通常一两天，结论是具体的：你们的问题卡在哪里，从哪里切入性价比最高。</p>
+
+  <p>第二件事是落地。根据诊断结果，裁剪一套适合你们规模和协作工具的方案，配置飞书 Bot、搭多维表格、把 AI 节点接进来，直到全链路在你们的真实需求上跑通。不是给你一个文档，是给你一个能真正用的系统。</p>
+
+  <hr>
+  </div>
+
+  <p><strong>最后一个判断：</strong></p>
+
+  <p>如果你读到这里，脑子里已经有一两个人的脸——就是那种靠着流程模糊、信息不透明在团队里过得很舒服的人——那这套系统可能正是你需要的。</p>
+  </div><!-- /第五章 hidden -->
+
+  <!-- ═══ 后记 ═══ -->
+  <div style="display:none">
+  <h2 id="afterword">后记：为什么我要把这个写出来</h2>
+
+  <p>我不打算在这里列一遍我的简历。</p>
+
+  <p>你读到这里，已经看到了一套真实跑通的系统，看到了每一个判断是怎么做出来的，看到了一条需求从提出到复盘的完整路径。这就是我希望你记住的：我是一个能识别真实企业痛点，并且能把解决方案落地的人。</p>
+
+  <hr>
+
+  <p><strong>为什么要写出来？</strong></p>
+
+  <p>说实话，是为了找客户。</p>
+
+  <p>市面上写 AI 企业提效的文章很多，框架漂亮，案例都是「某企业」。我不想再加一篇。</p>
+
+  <p>我想要的结果，是有老板看完之后，觉得「我们公司也有这个问题」，然后来找我谈。不是概念上的谈，是真实痛点、真实工具、真实落地的那种谈。</p>
+
+  <p>这套系统不是我虚构的。它是我在真实产研环境里观察到问题之后，花了几天时间从零搭起来的。每一个设计判断都有来由，每一条跑过的需求都在多维表格里有记录。这份白皮书是我能给出的最诚实的自我介绍，比任何一页简历都更能说明我能做什么。</p>
+
+
+  </div><!-- /后记 hidden -->
+
+  <!-- Footer -->
+  <footer class="article-footer">
+    <div class="article-footer-copy">© 2026 Jacky Ships · AI需求链白皮书</div>
+    <a class="article-footer-link" href="index.html">← 返回 Demo</a>
+  </footer>
+
+</div><!-- /article-wrap -->
+
+</body>
+</html>

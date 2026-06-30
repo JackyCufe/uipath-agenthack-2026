@@ -1,0 +1,263 @@
+# pipeline_config.yaml — 需求管理流程配置
+# ============================================================
+# 所有阶段定义、审批规则、字段映射均由此文件驱动。
+# 修改此文件即可适配不同团队的流程，无需改代码。
+
+# ─── 需求类型 ──────────────────────────────────────────
+# 不同类型决定 gatekeeper 的必填字段和行为
+requirement_types:
+  - id: customer_reported
+    name: 客户需求
+    description: 来自外部客户的反馈或需求
+    # 必填四问字段（null = 追问，非 null = 必须非空）
+    required_fields:
+      customer_who: true
+      usage_scenario: true
+      problem: true
+      expected_outcome: true
+    source_traceable_required: true   # 必须可追溯到客户
+
+  - id: internal_improvement
+    name: 内部改进
+    description: 技术债务、重构、内部工具优化
+    required_fields:
+      customer_who: false      # 无外部客户
+      usage_scenario: true
+      problem: true
+      expected_outcome: true
+    source_traceable_required: false
+
+  - id: compliance
+    name: 合规需求
+    description: 监管、安全、法务要求
+    required_fields:
+      customer_who: false
+      usage_scenario: true     # 什么合规场景
+      problem: true            # 不合规的后果
+      expected_outcome: true   # 合规后的状态
+    source_traceable_required: false
+
+  - id: competitive
+    name: 竞品对标
+    description: 基于竞品分析或市场调研的需求
+    required_fields:
+      customer_who: false
+      usage_scenario: true
+      problem: true
+      expected_outcome: true
+    source_traceable_required: false
+
+# ─── 优先级 ──────────────────────────────────────────
+priorities:
+  - SP   # 战略优先级
+  - P0   # 紧急/阻塞
+  - P1   # 高优
+  - P2   # 普通
+  - P3   # 低优/锦上添花
+
+# ─── 审批结果 ──────────────────────────────────────────
+# 六元审批结果。每个结果定义：ID、显示标签、是否进入下一阶段、行为说明
+# 注意：rejected 现在升级给组长裁决，不再退回上一阶段（BPMN兼容）
+approval_outcomes:
+  - id: approved
+    label: 通过
+    icon: "✅"
+    next_stage: true
+    behavior: "正常通过，自动进入下一阶段"
+    note_required: false      # 是否必须填写备注
+
+  - id: approved_with_conditions
+    label: 有条件通过
+    icon: "⚠️"
+    next_stage: true
+    behavior: "进入下一阶段，附带条件（下一阶段审批人可见）"
+    note_required: true        # 必须写明条件
+
+  - id: rejected
+    label: 驳回
+    icon: "↩️"
+    next_stage: false
+    behavior: "升级组长裁决（不再退回上一阶段）。组长可放行/终止/要求补充信息"
+    note_required: true
+
+  - id: deferred
+    label: 延期
+    icon: "⏸️"
+    next_stage: false
+    behavior: "不拒绝，移入下个迭代（Bitable 状态改为已延期）"
+    note_required: true        # 必须写明延期原因
+
+  - id: info_needed
+    label: 需补充信息
+    icon: "❓"
+    next_stage: false
+    behavior: "挂起当前阶段，等待提交人补充信息后重新审批"
+    note_required: true        # 必须写明需要什么信息
+
+  - id: delegated
+    label: 转交
+    icon: "↗️"
+    next_stage: false
+    behavior: "升级给组长或上级决策者，当前审批人不再处理"
+    note_required: true        # 必须写明转交原因（可选填转交对象）
+
+# ─── 阶段定义 ──────────────────────────────────────────
+stages:
+  # ── Stage 1：售前录入 / 守门 ──
+  - num: 1
+    id: gatekeeping
+    name: 售前录入
+    bitable_stage: "Stage1 售前录入"
+    role: 售前
+    description: 从客户原始需求提取四问结构化信息，守门验证可追溯性
+    max_rounds: 3                 # 最多追问轮数
+    timeout_hours: 24             # 超时自动提醒（0 = 不限时）
+
+    # 该阶段写入 Bitable 的字段前缀
+    bitable_prefix: S1
+
+    # 卡片配置
+    card:
+      template: stage1_input      # card_templates.py 中的构建函数名
+      confirm_card: true          # 是否需要二次确认卡片
+
+    # 阶段完成后的下一阶段
+    next_stage: 2                 # → Stage 2
+
+    # 工具白名单（哪些 Feishu 工具可用）
+    tool_whitelist:
+      - submit_gatekeeping_result
+
+  # ── Stage 2：产品审批 ──
+  - num: 2
+    id: pm_review
+    name: 产品审批
+    bitable_stage: "Stage2 产品审批"
+    role: 产品经理
+    description: PM确认核心价值、定义验收标准、生成客户场景测试用例
+    timeout_hours: 48
+
+    bitable_prefix: S2
+
+    card:
+      template: stage2_pm_card      # 第一张卡（PM 填写核心字段）
+      confirm_card: true            # 第二张卡（测试用例确认）
+
+    next_stage: 3
+
+    tool_whitelist: []
+
+    # AI 辅助：生成结构化验收标准和测试用例
+    ai_assist:
+      agent: 02-value-transform.md
+      triggers_on: s2_generate     # 点击"生成测试用例"按钮触发
+
+  # ── Stage 3：研发审批 ──
+  - num: 3
+    id: dev_review
+    name: 研发审批
+    bitable_stage: "Stage3 研发审批"
+    role: 研发负责人
+    description: 研发评估技术方案、工作量、风险，执行客户场景自测
+    timeout_hours: 72
+
+    bitable_prefix: S3
+
+    card:
+      template: stage3_dev_card
+
+    next_stage: 4
+
+    tool_whitelist:
+      - resolve_feishu_user_id
+      - send_feishu_message
+      - write_bitable_record
+
+  # ── Stage 4：发版审批 ──
+  - num: 4
+    id: release_review
+    name: 发版审批
+    bitable_stage: "Stage4 发版审批"
+    role: 产品负责人
+    description: 确认客户场景是否跑通、评估发版风险、制定回滚方案
+    timeout_hours: 24
+
+    bitable_prefix: S4
+
+    # 硬门禁条件
+    hard_gates:
+      - field: scenario_verified
+        condition: equals
+        value: "否"
+        message: "客户场景未跑通，不允许发版"
+
+    card:
+      template: stage4_release_card
+
+    next_stage: 5
+
+    tool_whitelist:
+      - resolve_feishu_user_id
+      - send_feishu_message
+      - write_bitable_record
+
+    ai_assist:
+      agent: 04-release-review.md
+      triggers_on: stage_enter     # 进入阶段时自动运行 AI 预分析
+
+  # ── Stage 5：客户反馈 ──
+  - num: 5
+    id: feedback_collect
+    name: 客户反馈
+    bitable_stage: "Stage5 客户反馈"
+    role: 售后
+    description: 设计问卷、收集客户反馈、AI 分析满意度
+    timeout_hours: 168            # 7天
+
+    bitable_prefix: S5
+
+    card:
+      template: feedback_design    # 第一张卡（问卷设计）
+      confirm_card: true           # 第二张卡（反馈录入）
+
+    next_stage: 6
+
+    tool_whitelist: []
+
+    ai_assist:
+      agent: 05-feedback-collect.md
+      triggers_on: feedback_submit  # 反馈录入完成后触发 AI 分析
+
+  # ── Stage 6：复盘 ──
+  - num: 6
+    id: retrospective
+    name: 复盘
+    bitable_stage: "Stage6 复盘"
+    role: 全员
+    description: 全流程复盘、ROI 评估、流程健康度、改进建议
+    timeout_hours: 72
+
+    bitable_prefix: S6
+    is_terminal: true               # 终态
+
+    card:
+      template: retrospective
+
+    next_stage: null                 # 无下一阶段（结束）
+
+    tool_whitelist: []
+
+    ai_assist:
+      agent: 06-retrospective.md
+      triggers_on: stage_enter
+
+# ─── 流程默认设置 ──────────────────────────────────────────
+defaults:
+  pipeline_name: "AI需求管理Pipeline"
+  max_concurrent_requirements: 10
+  auto_advance_on_approve: true    # 审批通过后自动进入下一阶段
+  notifications:
+    on_stage_advance: true         # 阶段流转时通知下一阶段负责人
+    on_rejection: true             # 拒绝时通知提交人
+    on_timeout: true              # 超时时通知
+    daily_digest: false           # 每日待审批汇总

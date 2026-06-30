@@ -1,0 +1,419 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+                  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+                  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+                  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+                  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                  targetNamespace="http://mindthegap.ai/pipeline">
+
+  <bpmn:process id="RequirementPipeline" name="MindTheGap Requirement Pipeline" isExecutable="true">
+
+    <bpmn:startEvent id="start" name="Start" />
+
+    <bpmn:endEvent id="end_success" name="End (Complete)" />
+    <bpmn:endEvent id="end_rejected_s1" name="End (S1 Rejected)" />
+    <bpmn:endEvent id="end_rejected_s2" name="End (S2 Rejected)" />
+    <bpmn:endEvent id="end_rejected_s3" name="End (S3 Rejected)" />
+    <bpmn:endEvent id="end_blocked" name="End (Hard Gate Blocked)" />
+
+    <bpmn:serviceTask id="kb_search" name="KB Search History">
+      <bpmn:documentation>Search knowledge base for similar historical requirements to provide context for S1 Gatekeeping.</bpmn:documentation>
+    </bpmn:serviceTask>
+
+    <bpmn:serviceTask id="s1_ai" name="S1 AI Gatekeeping">
+      <bpmn:documentation>AI Gatekeeping Agent extracts 4 structured fields and gives verdict. Max 3 rounds of follow-up.</bpmn:documentation>
+    </bpmn:serviceTask>
+
+    <bpmn:userTask id="s1_confirm" name="S1 Gatekeeping Confirm">
+      <bpmn:documentation>Sales reviews AI-extracted 4 fields, confirms or corrects before proceeding to S2.</bpmn:documentation>
+    </bpmn:userTask>
+
+    <bpmn:exclusiveGateway id="s1_verdict" name="S1 Verdict?" />
+
+    <bpmn:serviceTask id="s2_ai" name="S2 AI Value Transform">
+      <bpmn:documentation>Value Transform Agent structures PM acceptance criteria and generates customer scenario test cases.</bpmn:documentation>
+    </bpmn:serviceTask>
+
+    <bpmn:userTask id="s2_confirm" name="S2 PM Confirm">
+      <bpmn:documentation>PM confirms core value, feature definition, priority. Reviews AI-generated structured acceptance criteria and test cases.</bpmn:documentation>
+    </bpmn:userTask>
+
+    <bpmn:exclusiveGateway id="s2_verdict" name="S2 Verdict?" />
+
+    <bpmn:userTask id="s2_lead_decision" name="S2 Team Lead Decision">
+      <bpmn:documentation>S2 rejection escalates to team lead. Lead can: approve to S3, reject to End, or request info back to S2 Confirm.</bpmn:documentation>
+    </bpmn:userTask>
+
+    <bpmn:exclusiveGateway id="s2_lead_verdict" name="S2 Lead Verdict?" />
+
+    <bpmn:serviceTask id="s3_ai" name="S3 AI Test Case Generation">
+      <bpmn:documentation>Scenario Test Agent reads PM-confirmed Schema 2, generates customer-perspective test cases.</bpmn:documentation>
+    </bpmn:serviceTask>
+
+    <bpmn:userTask id="s3_confirm" name="S3 Dev Confirm">
+      <bpmn:documentation>Dev Lead evaluates technical plan, workload, risks. Executes customer scenario self-test.</bpmn:documentation>
+    </bpmn:userTask>
+
+    <bpmn:exclusiveGateway id="s3_verdict" name="S3 Verdict?" />
+
+    <bpmn:userTask id="s3_lead_decision" name="S3 Team Lead Decision">
+      <bpmn:documentation>S3 rejection escalates to team lead. Lead can: approve to S4, reject to End, or request info back to S3 Confirm.</bpmn:documentation>
+    </bpmn:userTask>
+
+    <bpmn:exclusiveGateway id="s3_lead_verdict" name="S3 Lead Verdict?" />
+
+    <bpmn:serviceTask id="s4_ai" name="S4 AI Release Review">
+      <bpmn:documentation>Release Review Agent aggregates all Schema 3 test conclusions, applies P0/P1/P2 rubric to determine release_verdict.</bpmn:documentation>
+    </bpmn:serviceTask>
+
+    <bpmn:exclusiveGateway id="hard_gate" name="Hard Gate?">
+      <bpmn:documentation>Hard gate: customer scenario must be verified. Any P0 failure means blocked, no exceptions.</bpmn:documentation>
+    </bpmn:exclusiveGateway>
+
+    <bpmn:userTask id="s4_release_confirm" name="S4 Product Lead Release Confirm">
+      <bpmn:documentation>Product Lead confirms release review report, final approve or block release.</bpmn:documentation>
+    </bpmn:userTask>
+
+    <bpmn:serviceTask id="s5_ai" name="S5 AI Feedback Analysis">
+      <bpmn:documentation>Feedback Collection Agent generates structured questionnaire, collects customer feedback, AI analyzes satisfaction.</bpmn:documentation>
+    </bpmn:serviceTask>
+
+    <bpmn:serviceTask id="s6_ai" name="S6 AI Retrospective + KB Write">
+      <bpmn:documentation>Retrospective Agent reads full-chain Schema 1-5, calculates ROI, generates next version suggestions, writes to knowledge base.</bpmn:documentation>
+    </bpmn:serviceTask>
+
+    <!-- Sequence Flows -->
+    <bpmn:sequenceFlow id="flow_start_kb" sourceRef="start" targetRef="kb_search" />
+    <bpmn:sequenceFlow id="flow_kb_s1ai" sourceRef="kb_search" targetRef="s1_ai" />
+    <bpmn:sequenceFlow id="flow_s1ai_confirm" sourceRef="s1_ai" targetRef="s1_confirm" />
+    <bpmn:sequenceFlow id="flow_s1_verdict" sourceRef="s1_confirm" targetRef="s1_verdict" />
+    <bpmn:sequenceFlow id="flow_s1_approved" sourceRef="s1_verdict" targetRef="s2_ai" name="approved" />
+    <bpmn:sequenceFlow id="flow_s1_info" sourceRef="s1_verdict" targetRef="s1_confirm" name="info_needed (loop, max 3)" />
+    <bpmn:sequenceFlow id="flow_s1_rejected" sourceRef="s1_verdict" targetRef="end_rejected_s1" name="rejected" />
+
+    <bpmn:sequenceFlow id="flow_s2_ai_confirm" sourceRef="s2_ai" targetRef="s2_confirm" />
+    <bpmn:sequenceFlow id="flow_s2_verdict" sourceRef="s2_confirm" targetRef="s2_verdict" />
+    <bpmn:sequenceFlow id="flow_s2_approved" sourceRef="s2_verdict" targetRef="s3_ai" name="approved" />
+    <bpmn:sequenceFlow id="flow_s2_escalate" sourceRef="s2_verdict" targetRef="s2_lead_decision" name="escalate" />
+    <bpmn:sequenceFlow id="flow_s2_rejected" sourceRef="s2_verdict" targetRef="end_rejected_s2" name="rejected" />
+
+    <bpmn:sequenceFlow id="flow_s2_lead_to_gate" sourceRef="s2_lead_decision" targetRef="s2_lead_verdict" />
+    <bpmn:sequenceFlow id="flow_s2_lead_approve" sourceRef="s2_lead_verdict" targetRef="s3_ai" name="approve to S3" />
+    <bpmn:sequenceFlow id="flow_s2_lead_reject" sourceRef="s2_lead_verdict" targetRef="end_rejected_s2" name="reject to End" />
+    <bpmn:sequenceFlow id="flow_s2_lead_info" sourceRef="s2_lead_verdict" targetRef="s2_confirm" name="info to S2 retry" />
+
+    <bpmn:sequenceFlow id="flow_s3_ai_confirm" sourceRef="s3_ai" targetRef="s3_confirm" />
+    <bpmn:sequenceFlow id="flow_s3_verdict" sourceRef="s3_confirm" targetRef="s3_verdict" />
+    <bpmn:sequenceFlow id="flow_s3_approved" sourceRef="s3_verdict" targetRef="s4_ai" name="approved" />
+    <bpmn:sequenceFlow id="flow_s3_escalate" sourceRef="s3_verdict" targetRef="s3_lead_decision" name="escalate" />
+    <bpmn:sequenceFlow id="flow_s3_rejected" sourceRef="s3_verdict" targetRef="end_rejected_s3" name="rejected" />
+
+    <bpmn:sequenceFlow id="flow_s3_lead_to_gate" sourceRef="s3_lead_decision" targetRef="s3_lead_verdict" />
+    <bpmn:sequenceFlow id="flow_s3_lead_approve" sourceRef="s3_lead_verdict" targetRef="s4_ai" name="approve to S4" />
+    <bpmn:sequenceFlow id="flow_s3_lead_reject" sourceRef="s3_lead_verdict" targetRef="end_rejected_s3" name="reject to End" />
+    <bpmn:sequenceFlow id="flow_s3_lead_info" sourceRef="s3_lead_verdict" targetRef="s3_confirm" name="info to S3 retry" />
+
+    <bpmn:sequenceFlow id="flow_s4_to_gate" sourceRef="s4_ai" targetRef="hard_gate" />
+    <bpmn:sequenceFlow id="flow_gate_verified" sourceRef="hard_gate" targetRef="s4_release_confirm" name="verified" />
+    <bpmn:sequenceFlow id="flow_gate_blocked" sourceRef="hard_gate" targetRef="end_blocked" name="blocked" />
+
+    <bpmn:sequenceFlow id="flow_s4_confirm_s5" sourceRef="s4_release_confirm" targetRef="s5_ai" />
+    <bpmn:sequenceFlow id="flow_s5_s6" sourceRef="s5_ai" targetRef="s6_ai" />
+    <bpmn:sequenceFlow id="flow_s6_end" sourceRef="s6_ai" targetRef="end_success" />
+
+  </bpmn:process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="RequirementPipeline">
+
+      <!-- ═══ MAIN FLOW (y=200, height=80, center y=240) ═══ -->
+      <!-- Element width=110, gap=70, gateway width=50 -->
+
+      <bpmndi:BPMNShape id="Shape_start" bpmnElement="start">
+        <dc:Bounds x="40" y="222" width="36" height="36" />
+        <bpmndi:BPMNLabel><dc:Bounds x="48" y="264" width="20" height="14" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Shape_kb_search" bpmnElement="kb_search">
+        <dc:Bounds x="140" y="200" width="110" height="80" />
+        <bpmndi:BPMNLabel><dc:Bounds x="150" y="232" width="90" height="32" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Shape_s1_ai" bpmnElement="s1_ai">
+        <dc:Bounds x="320" y="200" width="110" height="80" />
+        <bpmndi:BPMNLabel><dc:Bounds x="330" y="232" width="90" height="32" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Shape_s1_confirm" bpmnElement="s1_confirm">
+        <dc:Bounds x="500" y="200" width="110" height="80" />
+        <bpmndi:BPMNLabel><dc:Bounds x="510" y="232" width="90" height="32" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Shape_s1_verdict" bpmnElement="s1_verdict" isMarkerVisible="true">
+        <dc:Bounds x="680" y="215" width="50" height="50" />
+        <bpmndi:BPMNLabel><dc:Bounds x="685" y="273" width="40" height="14" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Shape_s2_ai" bpmnElement="s2_ai">
+        <dc:Bounds x="800" y="200" width="110" height="80" />
+        <bpmndi:BPMNLabel><dc:Bounds x="810" y="232" width="90" height="32" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Shape_s2_confirm" bpmnElement="s2_confirm">
+        <dc:Bounds x="980" y="200" width="110" height="80" />
+        <bpmndi:BPMNLabel><dc:Bounds x="990" y="232" width="90" height="32" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Shape_s2_verdict" bpmnElement="s2_verdict" isMarkerVisible="true">
+        <dc:Bounds x="1160" y="215" width="50" height="50" />
+        <bpmndi:BPMNLabel><dc:Bounds x="1165" y="273" width="40" height="14" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Shape_s3_ai" bpmnElement="s3_ai">
+        <dc:Bounds x="1280" y="200" width="110" height="80" />
+        <bpmndi:BPMNLabel><dc:Bounds x="1290" y="232" width="90" height="32" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Shape_s3_confirm" bpmnElement="s3_confirm">
+        <dc:Bounds x="1460" y="200" width="110" height="80" />
+        <bpmndi:BPMNLabel><dc:Bounds x="1470" y="232" width="90" height="32" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Shape_s3_verdict" bpmnElement="s3_verdict" isMarkerVisible="true">
+        <dc:Bounds x="1640" y="215" width="50" height="50" />
+        <bpmndi:BPMNLabel><dc:Bounds x="1645" y="273" width="40" height="14" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Shape_s4_ai" bpmnElement="s4_ai">
+        <dc:Bounds x="1760" y="200" width="110" height="80" />
+        <bpmndi:BPMNLabel><dc:Bounds x="1770" y="232" width="90" height="32" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Shape_hard_gate" bpmnElement="hard_gate" isMarkerVisible="true">
+        <dc:Bounds x="1940" y="215" width="50" height="50" />
+        <bpmndi:BPMNLabel><dc:Bounds x="1935" y="273" width="60" height="14" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Shape_s4_release_confirm" bpmnElement="s4_release_confirm">
+        <dc:Bounds x="2060" y="200" width="110" height="80" />
+        <bpmndi:BPMNLabel><dc:Bounds x="2070" y="226" width="90" height="40" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Shape_s5_ai" bpmnElement="s5_ai">
+        <dc:Bounds x="2240" y="200" width="110" height="80" />
+        <bpmndi:BPMNLabel><dc:Bounds x="2250" y="232" width="90" height="32" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Shape_s6_ai" bpmnElement="s6_ai">
+        <dc:Bounds x="2420" y="200" width="110" height="80" />
+        <bpmndi:BPMNLabel><dc:Bounds x="2430" y="226" width="90" height="40" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Shape_end_success" bpmnElement="end_success">
+        <dc:Bounds x="2600" y="222" width="36" height="36" />
+        <bpmndi:BPMNLabel><dc:Bounds x="2595" y="264" width="46" height="14" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- ═══ END EVENTS (y=60, aligned above gateways) ═══ -->
+
+      <bpmndi:BPMNShape id="Shape_end_rejected_s1" bpmnElement="end_rejected_s1">
+        <dc:Bounds x="687" y="60" width="36" height="36" />
+        <bpmndi:BPMNLabel><dc:Bounds x="665" y="100" width="80" height="14" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Shape_end_rejected_s2" bpmnElement="end_rejected_s2">
+        <dc:Bounds x="1167" y="60" width="36" height="36" />
+        <bpmndi:BPMNLabel><dc:Bounds x="1145" y="100" width="80" height="14" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Shape_end_rejected_s3" bpmnElement="end_rejected_s3">
+        <dc:Bounds x="1647" y="60" width="36" height="36" />
+        <bpmndi:BPMNLabel><dc:Bounds x="1625" y="100" width="80" height="14" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Shape_end_blocked" bpmnElement="end_blocked">
+        <dc:Bounds x="1947" y="60" width="36" height="36" />
+        <bpmndi:BPMNLabel><dc:Bounds x="1920" y="100" width="90" height="14" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- ═══ ESCALATION (y=430, aligned below gateways) ═══ -->
+
+      <bpmndi:BPMNShape id="Shape_s2_lead_decision" bpmnElement="s2_lead_decision">
+        <dc:Bounds x="1130" y="430" width="110" height="80" />
+        <bpmndi:BPMNLabel><dc:Bounds x="1140" y="462" width="90" height="32" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Shape_s2_lead_verdict" bpmnElement="s2_lead_verdict" isMarkerVisible="true">
+        <dc:Bounds x="1310" y="445" width="50" height="50" />
+        <bpmndi:BPMNLabel><dc:Bounds x="1295" y="503" width="80" height="14" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Shape_s3_lead_decision" bpmnElement="s3_lead_decision">
+        <dc:Bounds x="1610" y="430" width="110" height="80" />
+        <bpmndi:BPMNLabel><dc:Bounds x="1620" y="462" width="90" height="32" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <bpmndi:BPMNShape id="Shape_s3_lead_verdict" bpmnElement="s3_lead_verdict" isMarkerVisible="true">
+        <dc:Bounds x="1790" y="445" width="50" height="50" />
+        <bpmndi:BPMNLabel><dc:Bounds x="1775" y="503" width="80" height="14" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+
+      <!-- ═══ EDGES ═══ -->
+
+      <!-- Main flow: start → kb → s1_ai → s1_confirm → s1_verdict → s2_ai → ... -->
+      <bpmndi:BPMNEdge id="Edge_start_kb" bpmnElement="flow_start_kb">
+        <di:waypoint x="76" y="240" /><di:waypoint x="140" y="240" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_kb_s1ai" bpmnElement="flow_kb_s1ai">
+        <di:waypoint x="250" y="240" /><di:waypoint x="320" y="240" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_s1ai_confirm" bpmnElement="flow_s1ai_confirm">
+        <di:waypoint x="430" y="240" /><di:waypoint x="500" y="240" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_s1_verdict" bpmnElement="flow_s1_verdict">
+        <di:waypoint x="610" y="240" /><di:waypoint x="680" y="240" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_s1_approved" bpmnElement="flow_s1_approved">
+        <di:waypoint x="730" y="240" /><di:waypoint x="800" y="240" />
+        <bpmndi:BPMNLabel><dc:Bounds x="735" y="220" width="50" height="14" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <!-- S1 info loop: down from gateway, left, up to S1 Confirm -->
+      <bpmndi:BPMNEdge id="Edge_s1_info" bpmnElement="flow_s1_info">
+        <di:waypoint x="705" y="265" /><di:waypoint x="705" y="340" />
+        <di:waypoint x="555" y="340" /><di:waypoint x="555" y="280" />
+        <bpmndi:BPMNLabel><dc:Bounds x="560" y="320" width="100" height="14" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <!-- S1 rejected: straight up -->
+      <bpmndi:BPMNEdge id="Edge_s1_rejected" bpmnElement="flow_s1_rejected">
+        <di:waypoint x="705" y="215" /><di:waypoint x="705" y="96" />
+        <bpmndi:BPMNLabel><dc:Bounds x="712" y="150" width="50" height="14" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <!-- S2 AI → Confirm → Verdict -->
+      <bpmndi:BPMNEdge id="Edge_s2_ai_confirm" bpmnElement="flow_s2_ai_confirm">
+        <di:waypoint x="910" y="240" /><di:waypoint x="980" y="240" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_s2_verdict" bpmnElement="flow_s2_verdict">
+        <di:waypoint x="1090" y="240" /><di:waypoint x="1160" y="240" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_s2_approved" bpmnElement="flow_s2_approved">
+        <di:waypoint x="1210" y="240" /><di:waypoint x="1280" y="240" />
+        <bpmndi:BPMNLabel><dc:Bounds x="1215" y="220" width="50" height="14" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <!-- S2 escalate: down -->
+      <bpmndi:BPMNEdge id="Edge_s2_escalate" bpmnElement="flow_s2_escalate">
+        <di:waypoint x="1185" y="265" /><di:waypoint x="1185" y="430" />
+        <bpmndi:BPMNLabel><dc:Bounds x="1192" y="340" width="50" height="14" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <!-- S2 rejected: up -->
+      <bpmndi:BPMNEdge id="Edge_s2_rejected" bpmnElement="flow_s2_rejected">
+        <di:waypoint x="1185" y="215" /><di:waypoint x="1185" y="96" />
+        <bpmndi:BPMNLabel><dc:Bounds x="1192" y="150" width="50" height="14" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <!-- S2 Lead → Verdict -->
+      <bpmndi:BPMNEdge id="Edge_s2_lead_to_gate" bpmnElement="flow_s2_lead_to_gate">
+        <di:waypoint x="1240" y="470" /><di:waypoint x="1310" y="470" />
+      </bpmndi:BPMNEdge>
+
+      <!-- S2 Lead approve: up to S3 AI bottom -->
+      <bpmndi:BPMNEdge id="Edge_s2_lead_approve" bpmnElement="flow_s2_lead_approve">
+        <di:waypoint x="1335" y="445" /><di:waypoint x="1335" y="280" />
+        <bpmndi:BPMNLabel><dc:Bounds x="1342" y="360" width="60" height="14" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <!-- S2 Lead reject: up, left, up to End -->
+      <bpmndi:BPMNEdge id="Edge_s2_lead_reject" bpmnElement="flow_s2_lead_reject">
+        <di:waypoint x="1310" y="445" /><di:waypoint x="1310" y="370" />
+        <di:waypoint x="1185" y="370" /><di:waypoint x="1185" y="96" />
+        <bpmndi:BPMNLabel><dc:Bounds x="1220" y="358" width="60" height="14" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <!-- S2 Lead info: up, far left, up to S2 Confirm bottom -->
+      <bpmndi:BPMNEdge id="Edge_s2_lead_info" bpmnElement="flow_s2_lead_info">
+        <di:waypoint x="1335" y="445" /><di:waypoint x="1335" y="370" />
+        <di:waypoint x="1035" y="370" /><di:waypoint x="1035" y="280" />
+        <bpmndi:BPMNLabel><dc:Bounds x="1100" y="358" width="80" height="14" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <!-- S3 AI → Confirm → Verdict -->
+      <bpmndi:BPMNEdge id="Edge_s3_ai_confirm" bpmnElement="flow_s3_ai_confirm">
+        <di:waypoint x="1390" y="240" /><di:waypoint x="1460" y="240" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_s3_verdict" bpmnElement="flow_s3_verdict">
+        <di:waypoint x="1570" y="240" /><di:waypoint x="1640" y="240" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_s3_approved" bpmnElement="flow_s3_approved">
+        <di:waypoint x="1690" y="240" /><di:waypoint x="1760" y="240" />
+        <bpmndi:BPMNLabel><dc:Bounds x="1695" y="220" width="50" height="14" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <!-- S3 escalate: down -->
+      <bpmndi:BPMNEdge id="Edge_s3_escalate" bpmnElement="flow_s3_escalate">
+        <di:waypoint x="1665" y="265" /><di:waypoint x="1665" y="430" />
+        <bpmndi:BPMNLabel><dc:Bounds x="1672" y="340" width="50" height="14" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <!-- S3 rejected: up -->
+      <bpmndi:BPMNEdge id="Edge_s3_rejected" bpmnElement="flow_s3_rejected">
+        <di:waypoint x="1665" y="215" /><di:waypoint x="1665" y="96" />
+        <bpmndi:BPMNLabel><dc:Bounds x="1672" y="150" width="50" height="14" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <!-- S3 Lead → Verdict -->
+      <bpmndi:BPMNEdge id="Edge_s3_lead_to_gate" bpmnElement="flow_s3_lead_to_gate">
+        <di:waypoint x="1720" y="470" /><di:waypoint x="1790" y="470" />
+      </bpmndi:BPMNEdge>
+
+      <!-- S3 Lead approve: up to S4 AI bottom -->
+      <bpmndi:BPMNEdge id="Edge_s3_lead_approve" bpmnElement="flow_s3_lead_approve">
+        <di:waypoint x="1815" y="445" /><di:waypoint x="1815" y="280" />
+        <bpmndi:BPMNLabel><dc:Bounds x="1822" y="360" width="60" height="14" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <!-- S3 Lead reject: up, left, up to End -->
+      <bpmndi:BPMNEdge id="Edge_s3_lead_reject" bpmnElement="flow_s3_lead_reject">
+        <di:waypoint x="1790" y="445" /><di:waypoint x="1790" y="370" />
+        <di:waypoint x="1665" y="370" /><di:waypoint x="1665" y="96" />
+        <bpmndi:BPMNLabel><dc:Bounds x="1700" y="358" width="60" height="14" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <!-- S3 Lead info: up, far left, up to S3 Confirm bottom -->
+      <bpmndi:BPMNEdge id="Edge_s3_lead_info" bpmnElement="flow_s3_lead_info">
+        <di:waypoint x="1815" y="445" /><di:waypoint x="1815" y="370" />
+        <di:waypoint x="1515" y="370" /><di:waypoint x="1515" y="280" />
+        <bpmndi:BPMNLabel><dc:Bounds x="1580" y="358" width="80" height="14" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <!-- S4 → Hard Gate -->
+      <bpmndi:BPMNEdge id="Edge_s4_to_gate" bpmnElement="flow_s4_to_gate">
+        <di:waypoint x="1870" y="240" /><di:waypoint x="1940" y="240" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_gate_verified" bpmnElement="flow_gate_verified">
+        <di:waypoint x="1990" y="240" /><di:waypoint x="2060" y="240" />
+        <bpmndi:BPMNLabel><dc:Bounds x="1995" y="220" width="50" height="14" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_gate_blocked" bpmnElement="flow_gate_blocked">
+        <di:waypoint x="1965" y="215" /><di:waypoint x="1965" y="96" />
+        <bpmndi:BPMNLabel><dc:Bounds x="1972" y="150" width="50" height="14" /></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+
+      <!-- Release → S5 → S6 → End -->
+      <bpmndi:BPMNEdge id="Edge_s4_confirm_s5" bpmnElement="flow_s4_confirm_s5">
+        <di:waypoint x="2170" y="240" /><di:waypoint x="2240" y="240" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_s5_s6" bpmnElement="flow_s5_s6">
+        <di:waypoint x="2350" y="240" /><di:waypoint x="2420" y="240" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Edge_s6_end" bpmnElement="flow_s6_end">
+        <di:waypoint x="2530" y="240" /><di:waypoint x="2600" y="240" />
+      </bpmndi:BPMNEdge>
+
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+
+</bpmn:definitions>

@@ -1,0 +1,36 @@
+{
+  "version": "v2.5.0",
+  "started_at": "2026-05-09T13:30:45Z",
+  "requirements": [
+    {
+      "requirement_id": "req_001",
+      "schema1": {
+        "schema_version": "1.0",
+        "stage": "gatekeeping_rejected",
+        "requirement_id": "req_001",
+        "original_text": "售前需要一个接待后台的Skill，让代理商能够通过一句话完成接待首页的配置，解决现在需要上门服务教客户配置、交付成本高的问题。预期效果是：代理商发送一条指令后，后台自动生成配置并展示预览，无需工程师到场，首次配置时间从2小时压缩到15分钟以内。",
+        "submitted_by": "售前团队",
+        "submitted_at": null,
+        "requirement_source": "售前",
+        "gatekeeping": {
+          "verdict": "approved",
+          "rounds": 1,
+          "customer_who": "代理商",
+          "usage_scenario": "代理商首次部署机器人接待场景，首次配置接待首页时",
+          "problem": "需要上门服务教客户配置，交付成本高",
+          "expected_outcome": "代理商发送一条指令后，后台自动生成配置并展示预览，无需工程师到场，首次配置时间从2小时压缩到15分钟以内",
+          "reject_reason": "PM拒绝接收：",
+          "followup_questions": []
+        },
+        "confirmed_by": null,
+        "confirmed_at": null
+      },
+      "schema2": null,
+      "schema3": null
+    }
+  ],
+  "schema4": null,
+  "schema5": null,
+  "schema6": null,
+  "finished_at": "2026-05-09T13:31:56Z"
+}
